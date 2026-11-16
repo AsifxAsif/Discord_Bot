@@ -62,7 +62,7 @@ module.exports = {
 					inline: true
 				}, {
 					name: "Notify channel",
-					value: process.env.NOTIFY_CHANNEL_ID ? `<#${process.env.NOTIFY_CHANNEL_ID}>` : "Not configured",
+					value: process.env.NOTIFYCHANNELID ? `<#${process.env.NOTIFYCHANNELID}>` : "Not configured",
 					inline: true
 				}, {
 					name: "Last scan",
@@ -88,11 +88,11 @@ module.exports = {
 		}
 		if (await denyIfNotAdmin(interaction)) return;
 		if (sub === "start") {
-			if (!process.env.NOTIFY_CHANNEL_ID) {
+			if (!process.env.NOTIFYCHANNELID) {
 				await interaction.reply({
 					embeds: [makeEmbed({
 						title: "🤖 Automatic redemption starting",
-						description: "The scanner will run, but no channel notifications will be posted because `NOTIFY_CHANNEL_ID` is not configured.",
+						description: "The scanner will run, but no channel notifications will be posted because `NOTIFYCHANNELID` is not configured.",
 						color: "warning",
 						fields: [{
 							name: "Scan interval",
@@ -114,7 +114,7 @@ module.exports = {
 						inline: true
 					}, {
 						name: "Results channel",
-						value: `<#${process.env.NOTIFY_CHANNEL_ID}>`,
+						value: `<#${process.env.NOTIFYCHANNELID}>`,
 						inline: true
 					}, {
 						name: "Targets",

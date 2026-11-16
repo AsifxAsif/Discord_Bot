@@ -21,7 +21,7 @@ function slotsFooter(userId) {
   const u = listUser(userId);
   const pLeft = Math.max(0, MAX_PLAYERS - (u.players || []).length);
   const aLeft = Math.max(0, MAX_ALLIANCES - (u.alliances || []).length);
-  return `Slots left: ${pLeft}/${MAX_PLAYERS} players · ${aLeft}/${MAX_ALLIANCES} alliances · auto-redeem ON`;
+  return `Slots left: ${pLeft}/${MAX_PLAYERS} players · ${aLeft}/${MAX_ALLIANCES} alliances · AUTOREDEEM ON`;
 }
 
 function playerEmbed(p, userId) {

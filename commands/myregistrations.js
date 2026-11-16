@@ -48,7 +48,7 @@ module.exports = {
       const embed = makeEmbed({
         title: '📋 Your registrations',
         color: 'info',
-        description: 'Auto-redeem runs for these accounts and all alliance members (refreshed each cycle).',
+        description: 'AUTOREDEEM runs for these accounts and all alliance members (refreshed each cycle).',
         fields: [
           {
             name: `👤 Players · ${(u.players || []).length}/${MAX_PLAYERS}`,

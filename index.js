@@ -82,14 +82,14 @@ async function runReminderTick() {
 
 client.once(Events.ClientReady, (c) => {
   console.log(`✅ Logged in as ${c.user.tag}`);
-  const autoOff = String(process.env.AUTO_REDEEM || 'true').toLowerCase() === 'false';
+  const autoOff = String(process.env.AUTOREDEEM || 'true').toLowerCase() === 'false';
   if (!autoOff) {
-    console.log('Auto-redeem ON');
+    console.log('AUTOREDEEM ON');
     auto.startAuto(c);
   } else {
     console.log('Auto is OFF. Use /auto start to enable.');
   }
-  if (String(process.env.BOOT_STATUS || 'true').toLowerCase() !== 'false') {
+  if (String(process.env.BOOTSTATUS || 'true').toLowerCase() !== 'false') {
     setTimeout(() => auto.postBootStatus(c).catch(console.error), 3000);
   }
 
@@ -716,8 +716,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-if (!process.env.DISCORD_TOKEN) {
-  console.error('Missing DISCORD_TOKEN in .env');
+if (!process.env.DISCORDTOKEN) {
+  console.error('Missing DISCORDTOKEN in .env');
   process.exit(1);
 }
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORDTOKEN);

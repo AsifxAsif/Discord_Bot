@@ -1,6 +1,6 @@
 # Kingshot Discord Bot
 
-Gift-code auto-redeem + Event reminders + Interactive / versus games.
+Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 
 ## Features
 
@@ -49,16 +49,16 @@ npm start
 ## Environment
 
 ```env
-DISCORD_TOKEN=
-CLIENT_ID=
-AUTO_REDEEM=true
-AUTO_INTERVAL_MINUTES=15
-NOTIFY_CHANNEL_ID=
-ERROR_ADMIN_USER_ID=
-REDEEM_DELAY_MS=2500
-MAX_PLAYERS_PER_USER=5
-MAX_ALLIANCES_PER_USER=3
-DATA_DIR=./data
+DISCORDTOKEN=
+CLIENTID=
+AUTOREDEEM=true
+AUTOINTERVALMINUTES=15
+NOTIFYCHANNELID=
+ERRORADMINUSERID=
+REDEEMDELAYMS=2500
+MAXPLAYERSPERUSER=5
+MAXALLIANCESPERUSER=3
+DATADIR=./data
 ```
 
 ## Permissions needed

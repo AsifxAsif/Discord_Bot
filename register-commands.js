@@ -16,15 +16,15 @@ for (const file of fs.readdirSync(dir).filter(f => f.endsWith(".js"))) {
 }
 const rest = new REST({
 	version: "10"
-}).setToken(process.env.DISCORD_TOKEN);
+}).setToken(process.env.DISCORDTOKEN);
 (async () => {
 	try {
-		if (!process.env.DISCORD_TOKEN || !process.env.CLIENT_ID) {
-			console.error("Need DISCORD_TOKEN and CLIENT_ID in .env");
+		if (!process.env.DISCORDTOKEN || !process.env.CLIENTID) {
+			console.error("Need DISCORDTOKEN and CLIENTID in .env");
 			process.exit(1)
 		}
 		console.log(`Registering ${commands.length} commands…`);
-		const data = await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), {
+		const data = await rest.put(Routes.applicationCommands(process.env.CLIENTID), {
 			body: commands
 		});
 		console.log(`✅ Registered ${data.length} command(s)`)

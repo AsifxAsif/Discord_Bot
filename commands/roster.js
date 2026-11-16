@@ -7,7 +7,7 @@ const { listUser, MAX_PLAYERS, MAX_ALLIANCES } = require('../lib/registrations')
 const { makeEmbed, errorEmbed } = require('../lib/ui');
 
 function saveUserRegistrations(userId, userData) {
-  const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
+  const dataDir = process.env.DATADIR || path.join(__dirname, '..', 'data');
   const regPath = path.join(dataDir, 'registrations.json');
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   let all = { users: {} };
@@ -166,7 +166,7 @@ module.exports = {
             { name: 'Alliances', value: String(alliances.length), inline: true },
             { name: 'Alliance members (live)', value: String(totalAllianceMembers), inline: true },
           ],
-          footer: 'Auto-redeem uses updated data on the next cycle',
+          footer: 'AUTOREDEEM uses updated data on the next cycle',
         }),
       ],
     });
