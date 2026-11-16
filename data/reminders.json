@@ -1,0 +1,25 @@
+{
+  "reminders": [
+    {
+      "id": "mwjebco5tie3v4",
+      "guildId": "1559208158952562789",
+      "name": "Bear Trap",
+      "type": "every_x_days",
+      "hour": 12,
+      "minute": 0,
+      "date": null,
+      "intervalDays": 2,
+      "weekdays": null,
+      "monthDay": null,
+      "channelId": "1559208159615258818",
+      "mention": "@everyone",
+      "offsets": [
+        10
+      ],
+      "enabled": true,
+      "createdBy": "598531173127422021",
+      "createdAt": "2026-11-16T15:05:46.469Z",
+      "lastFired": {}
+    }
+  ]
+}
