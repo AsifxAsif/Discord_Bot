@@ -36,7 +36,7 @@ Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 | `/games reaction` | 1v1 — first to 2, false-start penalty, ms timing |
 | `/games stats` · `/games leaderboard` | Points, win rate, streaks |
 
-Trivia questions and words live in `games/data.js` — edit them freely.
+Trivia (all Kingshot: troops, resources, buildings, heroes, events, pets) and words live in `games/data.js` — edit freely.
 
 ## Setup
 

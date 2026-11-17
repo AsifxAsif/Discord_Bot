@@ -34,12 +34,8 @@ const TRIVIA_TIME = 20000;
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 function triviaStart(interaction, update = false) {
-  // 2 Kingshot questions + 3 from the other categories, never repeating until the pool is used up
-  const uid = interaction.user.id;
-  const picked = core.shuffle([
-    ...pickFresh(uid, 'trivia', data.TRIVIA.filter((x) => x.cat === 'Kingshot'), 2),
-    ...pickFresh(uid, 'trivia', data.TRIVIA.filter((x) => x.cat !== 'Kingshot'), TRIVIA_ROUND - 2),
-  ]);
+  // 5 fresh Kingshot questions (mixed categories), never repeating until the pool is used up
+  const picked = pickFresh(interaction.user.id, 'trivia', data.TRIVIA, TRIVIA_ROUND);
   const qs = picked.map((item) => {
     const opts = core.shuffle([item.a, ...item.w]);
     return { q: item.q, cat: item.cat, opts, correct: opts.indexOf(item.a) };
@@ -81,7 +77,7 @@ function triviaView(s) {
   return {
     embeds: [
       embed({
-        title: `🧠 ${q.cat} Trivia · Question ${s.i + 1}/${s.qs.length}`,
+        title: `🧠 Kingshot · ${q.cat} · Question ${s.i + 1}/${s.qs.length}`,
         description: `**${q.q}**\n\n${lines}\n\n${status}`,
         color,
         fields: [
@@ -278,7 +274,7 @@ function hangView(s) {
   const display = s.word.split('').map((c) => (s.guessed.includes(c) || s.over ? c : '_')).join(' ');
   let title = '🪝 Hangman';
   let color = 'info';
-  let status = `Kingdom & war word · **${s.word.length}** letters`;
+  let status = `Kingshot term · **${s.word.length}** letters`;
   if (s.over === 'win') { title = '🎉 You saved him!'; color = 'success'; status = `The word was **${s.word}**.`; }
   if (s.over === 'lose') { title = '💀 Game over'; color = 'danger'; status = `The word was **${s.word}**.`; }
   if (s.over === 'quit') { title = '🏳️ Gave up'; color = 'neutral'; status = `The word was **${s.word}**.`; }
