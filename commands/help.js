@@ -26,10 +26,11 @@ module.exports = {
       fields.push({
         name: '⚙️ Admin (hidden from members)',
         value:
-          '`/eventreminder setup` — interactive dropdowns + modal\n' +
+          '`/eventreminder setup` — dropdowns + form (with rules/note field)\n' +
           '`/eventreminder list|delete|toggle|test`\n' +
-          '`/eventblog post` — form modal\n' +
-          '`/eventblog quick` — quick LIVE post\n' +
+          '`/eventblog post` — write it, then **post now** or **schedule**\n' +
+          '`/eventblog quick` — quick LIVE post (now or scheduled)\n' +
+          '`/eventblog list|delete|toggle` — scheduled announcements\n' +
           '`/auto` · `/stats`',
       });
     }

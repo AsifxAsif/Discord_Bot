@@ -1,346 +1,105 @@
-const {
-  SlashCommandBuilder,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ComponentType,
-  ModalBuilder,
-  TextInputBuilder,
-  TextInputStyle,
-} = require('discord.js');
-const {
-  setGame,
-  getGame,
-  endGame,
-  hasActiveGame,
-  randomInt,
-  pick,
-  TRIVIA_QUESTIONS,
-  SCRAMBLE_WORDS,
-} = require('../lib/games');
-const { makeEmbed, errorEmbed, resultEmbed } = require('../lib/ui');
+const { SlashCommandBuilder } = require('discord.js');
+const core = require('../games/core');
+const solo = require('../games/solo');
+const versus = require('../games/versus');
+const stats = require('../lib/gamestats');
 
-/* ---------- Helpers ---------- */
-function scramble(word) {
-  const arr = word.split('');
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  const s = arr.join('');
-  return s === word ? scramble(word) : s;
-}
+const { embed } = core;
 
-/* ---------- Tic-Tac-Toe ---------- */
-function emptyBoard() {
-  return Array(9).fill(null);
-}
-function renderBoard(board) {
-  const symbols = board.map((c, i) => (c === 'X' ? '❌' : c === 'O' ? '⭕' : `\`${i + 1}\``));
-  return (
-    `${symbols[0]} | ${symbols[1]} | ${symbols[2]}\n` +
-    `---------\n` +
-    `${symbols[3]} | ${symbols[4]} | ${symbols[5]}\n` +
-    `---------\n` +
-    `${symbols[6]} | ${symbols[7]} | ${symbols[8]}`
-  );
-}
-function checkWinner(board) {
-  const lines = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6],
-  ];
-  for (const [a, b, c] of lines) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
-  }
-  if (board.every((c) => c)) return 'draw';
-  return null;
+const opp = (s) => s.addUserOption((o) => o.setName('opponent').setDescription('Who to challenge').setRequired(true));
+
+async function showStats(interaction) {
+  const user = interaction.options.getUser('user') || interaction.user;
+  const st = stats.getStats(user.id);
+  const rate = st.played ? Math.round((st.wins / st.played) * 100) : 0;
+  const per = Object.entries(st.games || {})
+    .map(([k, g]) => `• **${k}** — ${g.wins}/${g.played} wins`)
+    .join('\n') || '_No games played yet_';
+  return interaction.reply({
+    embeds: [
+      embed({
+        title: `📊 Game stats — ${user.username}`,
+        color: 'info',
+        fields: [
+          { name: '⭐ Points', value: `**${st.points}**`, inline: true },
+          { name: 'Played', value: String(st.played), inline: true },
+          { name: 'Win rate', value: `${rate}%`, inline: true },
+          { name: 'W / L / D', value: `${st.wins} / ${st.losses} / ${st.draws}`, inline: true },
+          { name: '🔥 Win streak', value: `${st.streak} (best ${st.bestStreak})`, inline: true },
+          { name: '📅 Daily streak', value: `${st.daily?.streak || 0} (best ${st.daily?.best || 0})`, inline: true },
+          { name: 'By game', value: per },
+        ],
+      }),
+    ],
+    flags: core.EPH,
+  });
 }
 
-/* ---------- Connect Four ---------- */
-function emptyC4() {
-  return Array.from({ length: 6 }, () => Array(7).fill(null));
-}
-function renderC4(board) {
-  const map = (c) => (c === 'R' ? '🔴' : c === 'Y' ? '🟡' : '⚪');
-  let s = '';
-  for (let r = 0; r < 6; r++) {
-    s += board[r].map(map).join('') + '\n';
-  }
-  s += '1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣';
-  return s;
-}
-function dropC4(board, col, piece) {
-  for (let r = 5; r >= 0; r--) {
-    if (!board[r][col]) {
-      board[r][col] = piece;
-      return r;
-    }
-  }
-  return -1;
-}
-function checkC4(board, row, col, piece) {
-  const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
-  for (const [dr, dc] of dirs) {
-    let count = 1;
-    for (const sign of [1, -1]) {
-      let r = row + dr * sign;
-      let c = col + dc * sign;
-      while (r >= 0 && r < 6 && c >= 0 && c < 7 && board[r][c] === piece) {
-        count++;
-        r += dr * sign;
-        c += dc * sign;
-      }
-    }
-    if (count >= 4) return true;
-  }
-  return false;
+async function showLeaderboard(interaction) {
+  const top = stats.leaderboard(10);
+  const medals = ['🥇', '🥈', '🥉'];
+  const lines = top.map((u, i) => `${medals[i] || `**${i + 1}.**`} <@${u.id}> — **${u.points}** pts · ${u.wins}W ${u.losses}L ${u.draws}D`);
+  return interaction.reply({
+    embeds: [embed({ title: '🏆 Games leaderboard', description: lines.join('\n') || '_No games played yet — be the first!_', color: 'gold', footer: 'Win = 5 pts · Draw = 2 · Loss = 1 · solo games score by performance' })],
+    allowedMentions: { parse: [] },
+  });
 }
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('games')
-    .setDescription('Play interactive & competitive games')
-    .addSubcommand((s) => s.setName('trivia').setDescription('Kingshot trivia (private)'))
+    .setDescription('Play solo & 1v1 games')
+    .addSubcommand((s) => s.setName('trivia').setDescription('5-question Kingshot trivia (private)'))
     .addSubcommand((s) =>
       s
         .setName('guess')
-        .setDescription('Guess the number — private (1-100)')
-        .addIntegerOption((o) =>
-          o.setName('max').setDescription('Max number (default 100)').setRequired(false).setMinValue(10).setMaxValue(1000)
-        )
+        .setDescription('Guess the number (private)')
+        .addIntegerOption((o) => o.setName('max').setDescription('Highest number (default 100)').setMinValue(10).setMaxValue(1000))
     )
-    .addSubcommand((s) => s.setName('hangman').setDescription('Kingshot hangman (private)'))
-    .addSubcommand((s) => s.setName('scramble').setDescription('Unscramble a word (private)'))
+    .addSubcommand((s) => s.setName('hangman').setDescription('Hangman with a letter keyboard (private)'))
+    .addSubcommand((s) => s.setName('scramble').setDescription('Word scramble rounds (private)'))
+    .addSubcommand((s) => s.setName('daily').setDescription('Daily challenge — same number for everyone, keep your streak'))
+    .addSubcommand((s) => opp(s.setName('rps').setDescription('Rock Paper Scissors — first to 2')))
+    .addSubcommand((s) => opp(s.setName('tictactoe').setDescription('Tic-Tac-Toe 1v1')))
+    .addSubcommand((s) => opp(s.setName('connect4').setDescription('Connect Four 1v1')))
+    .addSubcommand((s) => opp(s.setName('reaction').setDescription('Reaction duel — first to 2')))
     .addSubcommand((s) =>
       s
-        .setName('rps')
-        .setDescription('Rock Paper Scissors vs another member')
-        .addUserOption((o) => o.setName('opponent').setDescription('Who to challenge').setRequired(true))
+        .setName('stats')
+        .setDescription('Your game stats')
+        .addUserOption((o) => o.setName('user').setDescription('Someone else (optional)'))
     )
-    .addSubcommand((s) =>
-      s
-        .setName('tictactoe')
-        .setDescription('Tic-Tac-Toe 1v1')
-        .addUserOption((o) => o.setName('opponent').setDescription('Who to challenge').setRequired(true))
-    )
-    .addSubcommand((s) =>
-      s
-        .setName('connect4')
-        .setDescription('Connect Four 1v1')
-        .addUserOption((o) => o.setName('opponent').setDescription('Who to challenge').setRequired(true))
-    )
-    .addSubcommand((s) =>
-      s
-        .setName('reaction')
-        .setDescription('Reaction duel — first to click wins')
-        .addUserOption((o) => o.setName('opponent').setDescription('Who to challenge').setRequired(true))
-    )
-    .addSubcommand((s) => s.setName('daily').setDescription('Daily challenge (private, 1 per day)')),
+    .addSubcommand((s) => s.setName('leaderboard').setDescription('Top players')),
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
-    const userId = interaction.user.id;
-
-    /* ===== TRIVIA (private via modal) ===== */
-    if (sub === 'trivia') {
-      const q = pick(TRIVIA_QUESTIONS);
-      const key = `trivia:${userId}:${Date.now()}`;
-      setGame(key, { answers: q.a, q: q.q });
-
-      const modal = new ModalBuilder()
-        .setCustomId(`game_trivia:${key}`)
-        .setTitle('Kingshot Trivia');
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('answer')
-            .setLabel(q.q.slice(0, 45))
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setPlaceholder('Type your answer…')
-        )
-      );
-      return interaction.showModal(modal);
+    if (sub === 'stats') return showStats(interaction);
+    if (sub === 'leaderboard') return showLeaderboard(interaction);
+    if (solo.SUB_TO_KEY[sub]) {
+      const key = solo.SUB_TO_KEY[sub];
+      return key === 'guess'
+        ? solo.STARTERS.guess(interaction, false, interaction.options.getInteger('max') || 100)
+        : solo.STARTERS[key](interaction, false);
     }
-
-    /* ===== GUESS (private via modal rounds) ===== */
-    if (sub === 'guess') {
-      const max = interaction.options.getInteger('max') || 100;
-      const secret = randomInt(1, max);
-      const key = `guess:${userId}`;
-      if (hasActiveGame(key)) endGame(key);
-      setGame(key, { secret, max, tries: 0 });
-
-      const modal = new ModalBuilder()
-        .setCustomId(`game_guess:${key}`)
-        .setTitle(`Guess 1–${max}`);
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('guess')
-            .setLabel(`Guess a number (1-${max}) · 8 tries`)
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setPlaceholder('e.g. 42')
-        )
-      );
-      return interaction.showModal(modal);
-    }
-
-    /* ===== HANGMAN (private via modal) ===== */
-    if (sub === 'hangman') {
-      const word = pick(SCRAMBLE_WORDS);
-      const key = `hang:${userId}`;
-      if (hasActiveGame(key)) endGame(key);
-      setGame(key, { word, guessed: [], lives: 6 });
-
-      const display = word.split('').map(() => '_').join(' ');
-      const modal = new ModalBuilder()
-        .setCustomId(`game_hang:${key}`)
-        .setTitle('Hangman — type one letter');
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('letter')
-            .setLabel(`${display} · Lives: 6`)
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setMaxLength(1)
-            .setPlaceholder('A letter')
-        )
-      );
-      return interaction.showModal(modal);
-    }
-
-    /* ===== SCRAMBLE (private via modal) ===== */
-    if (sub === 'scramble') {
-      const word = pick(SCRAMBLE_WORDS);
-      const mixed = scramble(word);
-      const key = `scramble:${userId}:${Date.now()}`;
-      setGame(key, { word });
-
-      const modal = new ModalBuilder()
-        .setCustomId(`game_scramble:${key}`)
-        .setTitle('Word Scramble');
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('answer')
-            .setLabel(`Unscramble: ${mixed}`)
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setPlaceholder('Your answer')
-        )
-      );
-      return interaction.showModal(modal);
-    }
-
-    /* ===== DAILY (private via modal) ===== */
-    if (sub === 'daily') {
-      const today = new Date().toISOString().slice(0, 10);
-      const key = `daily:${userId}:${today}`;
-      if (hasActiveGame(key)) {
-        return interaction.reply({
-          embeds: [errorEmbed('Already done', 'You already completed today’s challenge.')],
-          ephemeral: true,
-        });
-      }
-      const secret = randomInt(1, 50);
-      setGame(key, { secret, done: false });
-
-      const modal = new ModalBuilder()
-        .setCustomId(`game_daily:${key}`)
-        .setTitle('Daily Challenge');
-      modal.addComponents(
-        new ActionRowBuilder().addComponents(
-          new TextInputBuilder()
-            .setCustomId('guess')
-            .setLabel('Guess a number 1–50 (one try only)')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setPlaceholder('e.g. 27')
-        )
-      );
-      return interaction.showModal(modal);
-    }
-
-    /* ===== RPS (1v1 — public challenge) ===== */
-    if (sub === 'rps') {
-      const opponent = interaction.options.getUser('opponent');
-      if (opponent.bot || opponent.id === userId) {
-        return interaction.reply({ embeds: [errorEmbed('Invalid opponent', 'Choose a real member.')], ephemeral: true });
-      }
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`rps_accept:${userId}:${opponent.id}`).setLabel('Accept').setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId(`rps_decline:${userId}:${opponent.id}`).setLabel('Decline').setStyle(ButtonStyle.Danger)
-      );
-      await interaction.reply({
-        content: `${opponent}, you are challenged to **Rock Paper Scissors** by ${interaction.user}!`,
-        components: [row],
-      });
-      return;
-    }
-
-    /* ===== TICTACTOE ===== */
-    if (sub === 'tictactoe') {
-      const opponent = interaction.options.getUser('opponent');
-      if (opponent.bot || opponent.id === userId) {
-        return interaction.reply({ embeds: [errorEmbed('Invalid opponent', 'Choose a real member.')], ephemeral: true });
-      }
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`ttt_accept:${userId}:${opponent.id}`).setLabel('Accept').setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId(`ttt_decline:${userId}:${opponent.id}`).setLabel('Decline').setStyle(ButtonStyle.Danger)
-      );
-      await interaction.reply({
-        content: `${opponent}, you are challenged to **Tic-Tac-Toe** by ${interaction.user}!`,
-        components: [row],
-      });
-      return;
-    }
-
-    /* ===== CONNECT 4 ===== */
-    if (sub === 'connect4') {
-      const opponent = interaction.options.getUser('opponent');
-      if (opponent.bot || opponent.id === userId) {
-        return interaction.reply({ embeds: [errorEmbed('Invalid opponent', 'Choose a real member.')], ephemeral: true });
-      }
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`c4_accept:${userId}:${opponent.id}`).setLabel('Accept').setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId(`c4_decline:${userId}:${opponent.id}`).setLabel('Decline').setStyle(ButtonStyle.Danger)
-      );
-      await interaction.reply({
-        content: `${opponent}, you are challenged to **Connect Four** by ${interaction.user}!`,
-        components: [row],
-      });
-      return;
-    }
-
-    /* ===== REACTION DUEL ===== */
-    if (sub === 'reaction') {
-      const opponent = interaction.options.getUser('opponent');
-      if (opponent.bot || opponent.id === userId) {
-        return interaction.reply({ embeds: [errorEmbed('Invalid opponent', 'Choose a real member.')], ephemeral: true });
-      }
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`react_accept:${userId}:${opponent.id}`).setLabel('Accept').setStyle(ButtonStyle.Success),
-        new ButtonBuilder().setCustomId(`react_decline:${userId}:${opponent.id}`).setLabel('Decline').setStyle(ButtonStyle.Danger)
-      );
-      await interaction.reply({
-        content: `${opponent}, **Reaction Duel** challenge from ${interaction.user}!`,
-        components: [row],
-      });
-      return;
-    }
+    if (versus.SUB_TO_KEY[sub]) return versus.challenge(interaction, versus.SUB_TO_KEY[sub]);
   },
 };
 
-module.exports.emptyBoard = emptyBoard;
-module.exports.renderBoard = renderBoard;
-module.exports.checkWinner = checkWinner;
-module.exports.emptyC4 = emptyC4;
-module.exports.renderC4 = renderC4;
-module.exports.dropC4 = dropC4;
-module.exports.checkC4 = checkC4;
+/** Routes every `g:<game>:…` button / select / modal. Returns true if handled. */
+module.exports.handleGamesUI = async function handleGamesUI(interaction) {
+  const id = interaction.customId || '';
+  if (!id.startsWith('g:')) return false;
+  const parts = id.split(':');
+  const key = parts[1];
+  try {
+    if (solo.KEYS.has(key)) await solo.handle(interaction, parts);
+    else if (versus.KEYS.has(key)) await versus.handle(interaction, parts);
+    else return false;
+  } catch (e) {
+    console.error(`[games] ${id} failed:`, e);
+    const payload = { content: '⚠️ Something went wrong with that game. Try starting a new one.', flags: core.EPH };
+    if (interaction.replied || interaction.deferred) await interaction.followUp(payload).catch(() => {});
+    else await interaction.reply(payload).catch(() => {});
+  }
+  return true;
+};

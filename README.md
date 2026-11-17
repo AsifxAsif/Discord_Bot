@@ -10,30 +10,33 @@ Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 - `/auto start|stop|status|scan` (owner)
 - Automatic redeem loop for registered targets
 
-### Event Reminders (new)
-- `/eventreminder create` — supports:
-  - One-time
-  - Daily
-  - Every X days
-  - Weekly (choose days)
-  - Monthly
-- UTC timezone
-- `@everyone` or custom role
-- Multiple offsets (e.g. 60 min + 10 min before)
-- Admin + bot owner only
+### Event Reminders
+- `/eventreminder setup` — dropdowns + form: one-time, daily, every X days, weekly, monthly (UTC)
+- Events with 2 slots: Bear Trap 1/2, Swordland Legion 1/2, Viking Vengeance 1/2, Tri-Alliance Legion 1/2 (+ Arena, Castle Battle, KVK, Cesares, SG, Alliance Brawl, Custom — Custom asks for a name)
+- The reminder is a plain message: `⚔️ **Arena** @everyone` + **only the text you wrote** + small footer. No generated text
+- Multiple offsets (e.g. 60 + 10 min before). Footer: `PXD_BOT · Event: HH:MM UTC`
+- **Auto-removal:** the 10-min reminder replaces the 60-min one; leftovers are deleted when the event starts
+- `/eventreminder list|delete|toggle|test`
 
-### Games (new)
+### Event Blogs
+- `/eventblog post` / `quick` — preview, pick channel + mention, then **Post now** or **Schedule…**
+- Same schedule types as reminders; `/eventblog list|delete|toggle` to manage them
+
+### Games
 | Command | Type |
 |---------|------|
-| `/games trivia` | Solo |
-| `/games guess` | Solo |
-| `/games hangman` | Solo |
-| `/games scramble` | Solo |
-| `/games daily` | Solo (1/day) |
-| `/games rps` | 1v1 |
-| `/games tictactoe` | 1v1 |
-| `/games connect4` | 1v1 |
-| `/games reaction` | 1v1 |
+| `/games trivia` | Solo — 5 multiple-choice questions, timer, streak bonus |
+| `/games guess` | Solo — narrowing range bar, hearts, hint |
+| `/games hangman` | Solo — gallows art + A–M / N–Z letter menus |
+| `/games scramble` | Solo — rounds, hints, speed points |
+| `/games daily` | Solo — same number for everyone, 7 tries, saved streak |
+| `/games rps` | 1v1 — first to 2, hidden picks |
+| `/games tictactoe` | 1v1 — button board, winning line highlight |
+| `/games connect4` | 1v1 — emoji board, winning four highlighted |
+| `/games reaction` | 1v1 — first to 2, false-start penalty, ms timing |
+| `/games stats` · `/games leaderboard` | Points, win rate, streaks |
+
+Trivia questions and words live in `games/data.js` — edit them freely.
 
 ## Setup
 
