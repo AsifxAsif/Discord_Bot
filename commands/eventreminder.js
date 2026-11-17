@@ -16,6 +16,7 @@ const {
   createReminder,
   listReminders,
   deleteReminder,
+  updateReminder,
   setEnabled,
   getNextOccurrence,
   getReminder,
@@ -45,6 +46,12 @@ module.exports = {
       s
         .setName('delete')
         .setDescription('Delete a reminder by ID')
+        .addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true))
+    )
+    .addSubcommand((s) =>
+      s
+        .setName('edit')
+        .setDescription('Edit an existing reminder')
         .addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true))
     )
     .addSubcommand((s) =>
@@ -82,7 +89,7 @@ module.exports = {
         const next = getNextOccurrence(r);
         const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : '—';
         const note = r.note ? ' · 📜 note' : '';
-        return `${r.enabled ? '🟢' : '🔴'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} · Next ${nextStr}${note}`;
+        return `${r.enabled ? '🟢' : '🔴'} ${r.emoji || '⚔️'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} · Next ${nextStr}${note}`;
       });
       return interaction.reply({
         embeds: [makeEmbed({ title: `📅 Reminders (${list.length})`, description: lines.join('\n\n').slice(0, 4000), color: 'info' })],
@@ -102,6 +109,25 @@ module.exports = {
         embeds: [resultEmbed(ok ? 'Deleted' : 'Not found', `\`${id}\``, !!ok)],
         ephemeral: true,
       });
+    }
+
+    if (sub === 'edit') {
+      const id = interaction.options.getString('id').trim();
+      const r = getReminder(id);
+      if (!r || r.guildId !== guildId) {
+        return interaction.reply({ embeds: [errorEmbed('Not found', `No reminder found with ID \`${id}\`.`)], ephemeral: true });
+      }
+      const modal = new ModalBuilder()
+        .setCustomId(`er_edit_modal:${userId}:${id}`)
+        .setTitle('Edit event reminder');
+      modal.addComponents(
+        input('name', 'Event name', { value: r.name || '', max: 60 }),
+        input('time', 'Event time UTC (HH:MM)', { value: `${pad(r.hour)}:${pad(r.minute)}`, max: 5 }),
+        input('offsets', 'Minutes before (e.g. 60,10)', { value: (r.offsets || [60, 10]).join(','), max: 30 }),
+        input('emoji', 'Event emoji', { value: r.emoji || '⚔️', max: 100 }),
+        input('note', 'Reminder text / rules', { style: TextInputStyle.Paragraph, required: false, value: r.note || '', max: 700 })
+      );
+      return interaction.showModal(modal);
     }
 
     if (sub === 'toggle') {
@@ -165,6 +191,41 @@ async function handleEventReminderUI(interaction) {
 
   if (!canManage(interaction)) {
     await interaction.reply({ content: 'Admin only.', ephemeral: true }).catch(() => {});
+    return true;
+  }
+
+  if (id.startsWith('er_edit_modal:')) {
+    const [, ownerId, reminderId] = id.split(':');
+    if (ownerId !== userId) {
+      await interaction.reply({ content: 'This edit form is not yours.', ephemeral: true }).catch(() => {});
+      return true;
+    }
+    const existing = getReminder(reminderId);
+    if (!existing || existing.guildId !== interaction.guildId) {
+      await interaction.reply({ content: 'That reminder no longer exists.', ephemeral: true }).catch(() => {});
+      return true;
+    }
+    const get = fieldGetter(interaction);
+    const name = get('name').trim();
+    const time = parseTime(get('time'));
+    const emoji = get('emoji').trim();
+    if (!name || !time || !emoji) {
+      await interaction.reply({ content: 'Please provide an event name, valid UTC time (HH:MM), and emoji.', ephemeral: true });
+      return true;
+    }
+    const updated = updateReminder(reminderId, {
+      name,
+      hour: time.hour,
+      minute: time.minute,
+      offsets: parseOffsets(get('offsets')),
+      emoji,
+      note: get('note').trim(),
+      // Preserve schedule type, date/recurrence, channel, mention, enabled state and sent history.
+    });
+    await interaction.reply({
+      embeds: [resultEmbed('Reminder updated', `**${updated.name}** ${updated.emoji}\n${formatSchedule(updated)}\nID: \`${updated.id}\``, true)],
+      ephemeral: true,
+    });
     return true;
   }
 

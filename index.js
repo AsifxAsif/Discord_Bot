@@ -19,13 +19,13 @@ const client = new Client({
 });
 client.commands = new Collection();
 
-const PORT = process.env.PORT || 8080;
-http
-  .createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('OK');
-  })
-  .listen(PORT, '0.0.0.0', () => console.log(`HTTP health check on :${PORT}`));
+const PORT = Number(process.env.PORT || 8080);
+const { attachActivityServer } = require('./activity-server');
+const activityHttpServer = http.createServer();
+attachActivityServer(activityHttpServer);
+activityHttpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`HTTP health check + Kingshot Activity on :${PORT}`);
+});
 
 const dir = path.join(__dirname, 'commands');
 for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.js'))) {
