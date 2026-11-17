@@ -1,16 +1,16 @@
 {
-  "name": "kingshot-activity",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5173",
-    "build": "vite build"
-  },
-  "dependencies": {
-    "@discord/embedded-app-sdk": "^2.5.0"
-  },
-  "devDependencies": {
-    "vite": "^6.0.7"
-  }
+	"name": "kingshot-activity",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite --host 0.0.0.0 --port 5173",
+		"build": "vite build"
+	},
+	"dependencies": {
+		"@discord/embedded-app-sdk": "^2.5.0"
+	},
+	"devDependencies": {
+		"vite": "^6.0.7"
+	}
 }

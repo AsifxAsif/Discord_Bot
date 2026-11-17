@@ -20,14 +20,7 @@ const {
 	errorEmbed
 } = require("../lib/ui");
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName("auto")
-		.setDescription("Automatic gift-code discovery and redeem (owner only)")
-		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-		.addSubcommand(s => s.setName("start").setDescription("Start auto: find codes + redeem for all members"))
-		.addSubcommand(s => s.setName("stop").setDescription("Stop auto loop"))
-		.addSubcommand(s => s.setName("status").setDescription("Show auto status + active codes"))
-		.addSubcommand(s => s.setName("scan").setDescription("Run one scan now (find + redeem new codes)")),
+	data: new SlashCommandBuilder().setName("auto").setDescription("Automatic gift-code discovery and redeem (owner only)").setDefaultMemberPermissions(PermissionFlagsBits.Administrator).addSubcommand(s => s.setName("start").setDescription("Start auto: find codes + redeem for all members")).addSubcommand(s => s.setName("stop").setDescription("Stop auto loop")).addSubcommand(s => s.setName("status").setDescription("Show auto status + active codes")).addSubcommand(s => s.setName("scan").setDescription("Run one scan now (find + redeem new codes)")),
 	async execute(interaction) {
 		if (await denyIfNotAdmin(interaction)) return;
 		const sub = interaction.options.getSubcommand();

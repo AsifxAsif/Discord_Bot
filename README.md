@@ -86,9 +86,9 @@ across a host that wipes temporary storage.
 
 ---
 
-## Kingshot Discord Activity (Tic-Tac-Toe)
+## Kingshot Discord Activity
 
-This project now includes a first Discord Activity frontend in `activity/` and a same-process Activity server in `activity-server.js`. The existing `/games tictactoe` Discord-button game is unchanged; the graphical Activity is launched through Discord's App Launcher / Activity Entry Point in this first milestone.
+This project includes the graphical Kingshot Arcade frontend in `activity/` and a same-process Activity server in `activity-server.js`. Every gameplay `/games` subcommand launches this Activity; the user chooses the specific game from its menu.
 
 ### Required environment variables
 
@@ -164,7 +164,7 @@ A normal browser tab can show the Vite page, but the Discord SDK authorization r
 - A third user is rejected for now; spectator mode is a later improvement.
 - Rematch resets the board for both players.
 - Rooms are in memory and are not persisted across bot restarts. This is appropriate for live game sessions; reminder persistence remains separate.
-- The Activity is currently launched through Discord's App Launcher / Launch Entry Point. Wiring the existing `/games tictactoe` subcommand to launch an Activity is a separate follow-up integration.
+- Every gameplay `/games` subcommand launches the graphical Activity. The Activity can also be opened from Discord's App Launcher.
 
 ## Kingshot Arcade Activity — all games
 
@@ -210,9 +210,9 @@ The graphical Discord Activity now includes these nine games:
 
 9. In Discord, run `/games activity` to launch the graphical Activity from the slash command, or open the App Launcher and choose **Kingshot Arcade**. Invite another participant to the same Activity instance for 1v1 play.
 
-### Important launch distinction
+### Gameplay command behavior
 
-Discord's Entry Point command is the supported launcher for an Activity. The existing `/games tictactoe`, `/games connect4`, `/games rps`, and other slash-command game flows are retained for compatibility and still use the legacy message components. To play in the graphical Activity, run `/games activity` or launch **Kingshot Arcade** from the Discord App Launcher. The `/games tictactoe`, `/games connect4`, `/games rps`, and other legacy subcommands remain message-component games for backwards compatibility.
+All gameplay subcommands (`activity`, `trivia`, `guess`, `hangman`, `scramble`, `daily`, `rps`, `tictactoe`, `connect4`, and `reaction`) now invoke Discord's Activity launch callback. They open the same Kingshot Arcade interface; select the desired game inside the Activity. `/games stats` and `/games leaderboard` continue to reply with normal Discord messages. The legacy button-based handlers remain in the source but are no longer called by these slash commands.
 
 ### Game behavior and limitations
 
