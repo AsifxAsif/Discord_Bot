@@ -1,8 +1,27 @@
+
+# Dependencies
 node_modules/
-.env
-*.log
-.DS_Store
-tmp/
 activity/node_modules/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+activity/.env
+activity/.env.*
+
+# Logs
+*.log
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+
+# Runtime data and backups
+data/
+
+# Activity production build
 activity/dist/
-activity/.env.local
