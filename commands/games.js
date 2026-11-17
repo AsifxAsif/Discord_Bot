@@ -35,6 +35,19 @@ async function showStats(interaction) {
   });
 }
 
+async function launchActivity(interaction) {
+  const response = await fetch(`https://discord.com/api/v10/interactions/${interaction.id}/${interaction.token}/callback`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 12 }), // LAUNCH_ACTIVITY
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    console.error('[games] Activity launch failed:', response.status, detail);
+    throw new Error('Discord could not launch Kingshot Arcade. Make sure Activities are enabled for this application and try the App Launcher.');
+  }
+}
+
 async function showLeaderboard(interaction) {
   const top = stats.leaderboard(10);
   const medals = ['🥇', '🥈', '🥉'];
@@ -48,7 +61,8 @@ async function showLeaderboard(interaction) {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('games')
-    .setDescription('Play solo & 1v1 games')
+    .setDescription('Launch Kingshot Arcade or play chat-based games')
+    .addSubcommand((s) => s.setName('activity').setDescription('Launch the graphical Kingshot Arcade Activity inside Discord'))
     .addSubcommand((s) => s.setName('trivia').setDescription('5-question Kingshot trivia (private)'))
     .addSubcommand((s) =>
       s
@@ -73,6 +87,7 @@ module.exports = {
 
   async execute(interaction) {
     const sub = interaction.options.getSubcommand();
+    if (sub === 'activity') return launchActivity(interaction);
     if (sub === 'stats') return showStats(interaction);
     if (sub === 'leaderboard') return showLeaderboard(interaction);
     if (solo.SUB_TO_KEY[sub]) {

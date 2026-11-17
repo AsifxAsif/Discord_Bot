@@ -166,17 +166,61 @@ A normal browser tab can show the Vite page, but the Discord SDK authorization r
 - Rooms are in memory and are not persisted across bot restarts. This is appropriate for live game sessions; reminder persistence remains separate.
 - The Activity is currently launched through Discord's App Launcher / Launch Entry Point. Wiring the existing `/games tictactoe` subcommand to launch an Activity is a separate follow-up integration.
 
+## Kingshot Arcade Activity — all games
 
-## Kingshot Activity — all games
+The graphical Discord Activity now includes these nine games:
 
-The vanilla-JavaScript Discord Activity includes all nine games from the bot's existing game modules:
-- 1v1: Tic-Tac-Toe, Connect Four, Rock Paper Scissors, Reaction Duel
-- Party/puzzle: Kingshot Trivia, Guess the Number, Hangman, Word Scramble, Daily Challenge
+- Tic-Tac-Toe
+- Connect Four
+- Rock Paper Scissors (first to two round wins)
+- Reaction Duel
+- Kingshot Trivia
+- Guess the Number
+- Hangman
+- Word Scramble
+- Daily Challenge (the question set and answer order are date-seeded)
 
-The Activity uses the same Discord OAuth2 credentials and Node.js hosting process as the bot. Build with `npm install` then `npm run build`; start with `npm start` (or `npm run dev` for local development). The Activity is served by the bot on `PORT` and communicates over `/ws`.
+### Launching the Activity in Discord
 
-The original Discord slash-command game interfaces remain available. The Activity game session is room-scoped to the Discord Activity instance and currently supports up to two participants. The five puzzle/party modes are shared turn-based room games (Trivia and Rock Paper Scissors allow both players to submit simultaneously). Game rooms are in-memory and reset if the bot restarts.
+1. In Discord Developer Portal, open the same application used by the bot.
+2. Under **Activities → Settings**, enable Activities.
+3. Add an Activity URL Mapping with prefix `/` pointing to the public HTTPS hostname serving this bot. The mapping target is the hostname only, without `https://`.
+4. Under **OAuth2 → General**, add `https://127.0.0.1` as a redirect URI for local development if required by the Discord Activity setup.
+5. Put `CLIENTID`, `DISCORDTOKEN`, `DISCORD_CLIENT_SECRET`, and `VITE_CLIENT_ID` in the root `.env`. `VITE_CLIENT_ID` is the same application Client ID as `CLIENTID`.
+6. Install and build from the project root:
 
-For local development, use an HTTPS tunnel to the Vite dev server and configure the Discord Activity URL mapping as described in the Discord Developer Portal setup section above.
+   ```bash
+   npm install
+   npm run build
+   ```
 
-Copy `.env.example` to `.env` and fill in your own credentials. Never commit or share `.env`.
+7. Register commands:
+
+   ```bash
+   npm run register
+   ```
+
+   The registration script preserves the existing chat-input commands and updates Discord's single global Entry Point command to **Kingshot Arcade**.
+
+8. Start the bot:
+
+   ```bash
+   npm start
+   ```
+
+9. In Discord, run `/games activity` to launch the graphical Activity from the slash command, or open the App Launcher and choose **Kingshot Arcade**. Invite another participant to the same Activity instance for 1v1 play.
+
+### Important launch distinction
+
+Discord's Entry Point command is the supported launcher for an Activity. The existing `/games tictactoe`, `/games connect4`, `/games rps`, and other slash-command game flows are retained for compatibility and still use the legacy message components. To play in the graphical Activity, run `/games activity` or launch **Kingshot Arcade** from the Discord App Launcher. The `/games tictactoe`, `/games connect4`, `/games rps`, and other legacy subcommands remain message-component games for backwards compatibility.
+
+### Game behavior and limitations
+
+- Tic-Tac-Toe and Connect Four enforce alternating turns on the server.
+- Rock Paper Scissors is a first-to-two-rounds match.
+- Reaction Duel uses a server-side random start delay and determines the first valid tap.
+- Trivia and Daily Challenge use the existing Kingshot trivia pool in `games/data.js`; Daily Challenge uses a date-based deterministic question set.
+- Guess the Number, Hangman, and Word Scramble use the existing Kingshot word/question data.
+- Rooms are scoped to the Discord Activity instance and kept in memory. A bot restart ends active matches; long-term match persistence is not implemented.
+- The Activity supports up to two participants per instance. Hangman is cooperative; trivia, guess, and scramble support a solo participant as well.
+- The existing `/games stats` and `/games leaderboard` continue to reflect the legacy slash-command game statistics; Activity match results are not yet written into that statistics store.
