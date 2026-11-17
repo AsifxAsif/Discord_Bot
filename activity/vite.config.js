@@ -8,7 +8,7 @@ export default defineConfig(({
 	// Read environment variables from the project root.
 	const env = loadEnv(mode, '..', '');
 	// Support both variable names.
-	const clientId = process.env.VITE_CLIENT_ID || process.env.CLIENTID || env.VITE_CLIENT_ID || env.CLIENTID || '';
+	const clientId = process.env.VITE_CLIENT_ID || process.env.CLIENTID || env.VITE_CLIENT_ID || env.CLIENTID || '1559205652205936762';
 	if (!clientId) {
 		console.warn('[Vite] Discord Application ID is missing during build!');
 	} else {
