@@ -717,3 +717,152 @@ button {
 		width: 23px
 	}
 }
+/* PXD Alliance — Kingshot royal war-room visual theme */
+:root {
+	color: #f5ead0;
+	background: #100f0d;
+	font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+body {
+	background:
+		radial-gradient(ellipse at 50% -24%, #6b4a1e55 0, transparent 48%),
+		radial-gradient(ellipse at 100% 30%, #34271966 0, transparent 42%),
+		linear-gradient(145deg, #17140f, #0d0d0c 68%, #17120c);
+}
+.topbar {
+	border-bottom: 1px solid #b88a3b55;
+	background: linear-gradient(90deg, #17130dF2, #211a10ed, #14110df2);
+	box-shadow: 0 5px 24px #0008, inset 0 -1px #f5d28a0a;
+}
+.brand-icon {
+	border: 1px solid #d7ad5a99;
+	border-radius: 10px 10px 14px 14px;
+	color: #f8e4b4;
+	background: linear-gradient(145deg, #8b6427, #493216 72%, #261b0e);
+	box-shadow: 0 0 0 3px #d4a64b12, 0 8px 24px #0009, inset 0 1px #ffe6a455;
+	text-shadow: 0 2px 5px #000;
+}
+.eyebrow {
+	color: #c9a45e;
+	letter-spacing: .2em;
+}
+.brand h1 {
+	color: #f3e4c4;
+	font-family: Georgia, "Times New Roman", serif;
+	letter-spacing: .015em;
+}
+.brand h1 span, .intro h2 span {
+	color: #e0b65f;
+}
+.connection {
+	color: #c1b18f;
+}
+.content {
+	width: min(980px, calc(100% - 32px));
+}
+.intro h2 {
+	color: #f4e8d0;
+	font-family: Georgia, "Times New Roman", serif;
+	font-weight: 800;
+	letter-spacing: -.035em;
+	text-shadow: 0 3px 18px #000;
+}
+.intro p {
+	color: #b8aa91;
+}
+.match-card {
+	border: 1px solid #b88a3b66;
+	border-radius: 12px;
+	background: linear-gradient(145deg, #292116f5, #17140ff5 70%);
+	box-shadow: 0 22px 55px #0008, inset 0 1px #f5d28a14;
+}
+.player {
+	border: 1px solid #a17a3a44;
+	border-radius: 8px;
+	background: #0d0c0a88;
+}
+.player.active {
+	border-color: #d6a84d;
+	background: #a879241c;
+	box-shadow: 0 0 22px #d4a3481c;
+}
+.avatar {
+	border-radius: 7px;
+	color: #f4dfb2;
+	background: linear-gradient(145deg, #755326, #352514);
+	border: 1px solid #c89b4b66;
+}
+.seat {
+	color: #e0b65f;
+}
+.versus {
+	color: #bd9650;
+}
+.lobby-note {
+	color: #c5b18d;
+}
+.game-grid {
+	gap: 14px;
+}
+.game-tile {
+	min-height: 180px;
+	border: 1px solid #a17b3f66;
+	border-radius: 10px;
+	background:
+		linear-gradient(145deg, #342919ee, #1b1710f5 70%),
+		repeating-linear-gradient(45deg, #ffffff05 0 1px, transparent 1px 7px);
+	box-shadow: 0 9px 24px #0005, inset 0 1px #f5d28a12;
+}
+.game-tile:hover {
+	transform: translateY(-4px);
+	border-color: #e0b65f;
+	box-shadow: 0 15px 32px #0008, 0 0 20px #c18c3222, inset 0 1px #ffe5a833;
+}
+.game-icon {
+	filter: drop-shadow(0 3px 4px #0009);
+}
+.game-tag {
+	border: 1px solid #c69b4c55;
+	border-radius: 4px;
+	background: #9b70252b;
+	color: #e0bd78;
+	letter-spacing: .04em;
+}
+.game-tile strong {
+	color: #f0dfbf;
+	font-family: Georgia, "Times New Roman", serif;
+}
+.game-tile small {
+	color: #b8aa91;
+}
+.tile-arrow, .back-button {
+	color: #e0b65f;
+}
+.game-status {
+	color: #e4d5b8;
+}
+.footer {
+	color: #9d8c6e;
+}
+button:focus-visible, input:focus-visible {
+	outline: 2px solid #e0b65f;
+	outline-offset: 3px;
+}
+@media (max-width: 620px) {
+	.topbar {
+		padding: 0 15px;
+		height: 66px;
+	}
+	.content {
+		width: min(100% - 22px, 520px);
+		padding-top: 25px;
+	}
+	.game-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px;
+	}
+	.game-tile {
+		min-height: 165px;
+		padding: 13px;
+	}
+}

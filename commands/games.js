@@ -89,33 +89,13 @@ async function showLeaderboard(interaction) {
 		},
 	});
 }
-const gameSubcommands = [
-	['activity', 'Open the graphical Kingshot Arcade Activity'],
-	['trivia', 'Open Kingshot Arcade (choose Trivia inside)'],
-	['guess', 'Open Kingshot Arcade (choose Guess the Number inside)'],
-	['hangman', 'Open Kingshot Arcade (choose Hangman inside)'],
-	['scramble', 'Open Kingshot Arcade (choose Word Scramble inside)'],
-	['daily', 'Open Kingshot Arcade (choose Daily Challenge inside)'],
-	['rps', 'Open Kingshot Arcade (choose Rock Paper Scissors inside)'],
-	['tictactoe', 'Open Kingshot Arcade (choose Tic-Tac-Toe inside)'],
-	['connect4', 'Open Kingshot Arcade (choose Connect Four inside)'],
-	['reaction', 'Open Kingshot Arcade (choose Reaction Duel inside)'],
-];
-const builder = new SlashCommandBuilder().setName('games').setDescription('Open Kingshot Arcade and view game stats');
-for (const [name, description] of gameSubcommands) {
-	builder.addSubcommand((sub) => sub.setName(name).setDescription(description));
-}
-builder.addSubcommand((sub) => sub.setName('stats').setDescription('Your game stats').addUserOption((option) => option.setName('user').setDescription('Someone else (optional)'))).addSubcommand((sub) => sub.setName('leaderboard').setDescription('Top players'));
+// One command opens the complete Activity. Players select every game from its lobby.
+const builder = new SlashCommandBuilder().setName('games').setDescription('Open the PXD Kingshot Arcade game hub');
 module.exports = {
 	data: builder,
 	async execute(interaction) {
-		const sub = interaction.options.getSubcommand();
-		if (sub === 'stats') return showStats(interaction);
-		if (sub === 'leaderboard') return showLeaderboard(interaction);
-		// Every gameplay command now opens the same graphical Activity.
-		// The user selects the requested game from the Activity's game menu.
-		if (gameSubcommands.some(([name]) => name === sub)) {
-			return launchActivity(interaction);
-		}
+		// A single /games command launches the complete arcade. Game selection
+		// happens inside the Activity, so there are no per-game slash commands.
+		return launchActivity(interaction);
 	},
 };

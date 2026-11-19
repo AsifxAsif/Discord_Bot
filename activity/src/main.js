@@ -102,8 +102,8 @@ function header() {
             <div class="brand">
                 <div class="brand-icon">⚔</div>
                 <div>
-                    <div class="eyebrow">KINGSHOT COMMUNITY</div>
-                    <h1>Kingshot <span>Arcade</span></h1>
+                    <div class="eyebrow">PXD ALLIANCE · KINGDOM ARCADE</div>
+                    <h1>PXD <span>Kingshot</span></h1>
                 </div>
             </div>
             <div class="connection ${connected ? 'online' : ''}">
@@ -122,7 +122,7 @@ function shell(content) {
             <footer class="footer">
                 ${esc(myName())}
                 <span>•</span>
-                Games for your kingdom
+                PXD · For the glory of the kingdom
             </footer>
         </main>
     `;
@@ -169,9 +169,9 @@ function renderMenu() {
 	const players = state?.players || [];
 	shell(`
         <section class="intro">
-            <div class="eyebrow">DISCORD ACTIVITY · MULTIPLAYER ARCADE</div>
-            <h2>Choose your <span>game</span></h2>
-            <p>Pick a game and invite someone to join this Activity.</p>
+            <div class="eyebrow">PXD ALLIANCE · THE ROYAL GAME HALL</div>
+            <h2>Choose your <span>battle</span></h2>
+            <p>Gather your allies, choose a game, and claim victory for PXD.</p>
         </section>
 
         <section class="match-card lobby">
@@ -269,8 +269,7 @@ function boardConnect(g) {
 		(g.winningCells || []).map(([r, c]) => `${r}-${c}`));
 	return `
         <div class="c4-board">
-            ${Array.from({ length: 7 }, (_, c) => ` < button
-	class = "drop-col"
+            ${Array.from({ length: 7 }, (_, c) => ` < button class = "drop-col"
 	data - action = "drop"
 	data - payload = '{"col":${c}}'
 	$ {
@@ -653,8 +652,8 @@ function connectSocket() {
 async function boot() {
 	shell(`
         <section class="intro">
-            <div class="eyebrow">KINGSHOT COMMUNITY</div>
-            <h2>Loading Arcade…</h2>
+            <div class="eyebrow">PXD ALLIANCE · KINGDOM ARCADE</div>
+            <h2>Opening the <span>Royal Game Hall</span>…</h2>
             <p>Connecting to Discord Activity.</p>
         </section>
     `);

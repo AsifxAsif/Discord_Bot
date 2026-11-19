@@ -26,16 +26,7 @@ Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 ### Games
 | Command | Type |
 |---------|------|
-| `/games trivia` | Solo — 5 multiple-choice questions, timer, streak bonus |
-| `/games guess` | Solo — narrowing range bar, hearts, hint |
-| `/games hangman` | Solo — gallows art + A–M / N–Z letter menus |
-| `/games scramble` | Solo — rounds, hints, speed points |
-| `/games daily` | Solo — same number for everyone, 7 tries, saved streak |
-| `/games rps` | 1v1 — first to 2, hidden picks |
-| `/games tictactoe` | 1v1 — button board, winning line highlight |
-| `/games connect4` | 1v1 — emoji board, winning four highlighted |
-| `/games reaction` | 1v1 — first to 2, false-start penalty, ms timing |
-| `/games stats` · `/games leaderboard` | Points, win rate, streaks |
+| `/games` | Opens the full Arcade lobby; choose any of the nine games inside the Activity |
 
 Trivia (all Kingshot: troops, resources, buildings, heroes, events, pets) and words live in `games/data.js` — edit freely.
 
@@ -88,7 +79,7 @@ across a host that wipes temporary storage.
 
 ## Kingshot Discord Activity
 
-This project includes the graphical Kingshot Arcade frontend in `activity/` and a same-process Activity server in `activity-server.js`. Every gameplay `/games` subcommand launches this Activity; the user chooses the specific game from its menu.
+This project includes the graphical Kingshot Arcade frontend in `activity/` and a same-process Activity server in `activity-server.js`. The single `/games` command launches this Activity; players choose any of the nine games from its in-Activity lobby.
 
 ### Required environment variables
 
@@ -164,7 +155,7 @@ A normal browser tab can show the Vite page, but the Discord SDK authorization r
 - A third user is rejected for now; spectator mode is a later improvement.
 - Rematch resets the board for both players.
 - Rooms are in memory and are not persisted across bot restarts. This is appropriate for live game sessions; reminder persistence remains separate.
-- Every gameplay `/games` subcommand launches the graphical Activity. The Activity can also be opened from Discord's App Launcher.
+- The single `/games` command launches the graphical Activity. The Activity can also be opened from Discord's App Launcher.
 
 ## Kingshot Arcade Activity — all games
 
@@ -208,11 +199,11 @@ The graphical Discord Activity now includes these nine games:
    npm start
    ```
 
-9. In Discord, run `/games activity` to launch the graphical Activity from the slash command, or open the App Launcher and choose **Kingshot Arcade**. Invite another participant to the same Activity instance for 1v1 play.
+9. In Discord, run `/games` to launch the graphical Activity from the slash command, or open the App Launcher and choose **Kingshot Arcade**. Invite another participant to the same Activity instance for 1v1 play.
 
 ### Gameplay command behavior
 
-All gameplay subcommands (`activity`, `trivia`, `guess`, `hangman`, `scramble`, `daily`, `rps`, `tictactoe`, `connect4`, and `reaction`) now invoke Discord's Activity launch callback. They open the same Kingshot Arcade interface; select the desired game inside the Activity. `/games stats` and `/games leaderboard` continue to reply with normal Discord messages. The legacy button-based handlers remain in the source but are no longer called by these slash commands.
+There is now one game slash command: `/games`. It opens the complete Kingshot Arcade Activity, where players select from all nine games. Individual game subcommands have been removed. The PXD-themed interface uses a dark medieval war-room palette with stone, iron, parchment, and royal-gold accents.
 
 ### Game behavior and limitations
 
