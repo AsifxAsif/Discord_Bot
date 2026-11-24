@@ -182,7 +182,7 @@ async function handleEventUI(interaction) {
 			await interaction.update({
 				embeds: [makeEmbed({
 					title: ' Reminders',
-					description: '_None yet._',
+					description: '_None yet. Use **New reminder** on the Event Desk._',
 					color: 'info'
 				})],
 				components: [row(new ButtonBuilder().setCustomId(`ed:home:${userId}`).setLabel(' Desk').setStyle(ButtonStyle.Secondary))],
@@ -758,7 +758,7 @@ async function handleEventUI(interaction) {
 			await interaction.update({
 				embeds: [makeEmbed({
 					title: ' Announcements',
-					description: '_None scheduled._',
+					description: '_None scheduled. Use **New announcement** on the Event Desk._',
 					color: 'info'
 				})],
 				components: [row(new ButtonBuilder().setCustomId(`ed:home:${userId}`).setLabel(' Desk').setStyle(ButtonStyle.Secondary))],

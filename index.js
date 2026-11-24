@@ -56,7 +56,7 @@ activityHttpServer.listen(PORT, '0.0.0.0', () => {
 const dir = path.join(__dirname, 'commands');
 for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.js'))) {
 	const cmd = require(path.join(dir, file));
-	if (cmd.data && cmd.execute) {
+	if (cmd.data && cmd.data.name && cmd.execute) {
 		client.commands.set(cmd.data.name, cmd);
 		console.log('Loaded /' + cmd.data.name);
 	}

@@ -9,9 +9,11 @@ const commands = [];
 const dir = path.join(__dirname, 'commands');
 for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.js'))) {
 	const command = require(path.join(dir, file));
-	if (command.data) {
+	if (command.data && command.data.name) {
 		commands.push(command.data.toJSON());
 		console.log(`Prepared /${command.data.name}`);
+	} else {
+		console.log(`Skipped ${file} (not a slash command)`);
 	}
 }
 const rest = new REST({
@@ -22,8 +24,6 @@ const rest = new REST({
 		if (!process.env.DISCORDTOKEN || !process.env.CLIENTID) {
 			throw new Error('Need DISCORDTOKEN and CLIENTID in .env');
 		}
-		// Activities have one global PRIMARY_ENTRY_POINT command. Reuse Discord's
-		// auto-created Launch command when present, so we do not create a duplicate.
 		let current = [];
 		try {
 			current = await rest.get(Routes.applicationCommands(process.env.CLIENTID));
@@ -48,6 +48,7 @@ const rest = new REST({
 		};
 		const body = [...commands, entryPoint];
 		console.log(`Registering ${commands.length} chat command(s) + Kingshot Arcade entry point...`);
+		console.log('Commands:', commands.map((c) => c.name).join(', '));
 		const data = await rest.put(Routes.applicationCommands(process.env.CLIENTID), {
 			body
 		});
