@@ -73,7 +73,7 @@ const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({
 } [c]));
 const send = o => {
 	if (socket?.readyState === WebSocket.OPEN) {
-		socket.send(JSON.stringify(o));
+ socket.send(JSON.stringify(o));
 	}
 };
 const me = () => state?.players?.findIndex(p => p.id === session?.user?.id) ?? -1;
@@ -132,33 +132,33 @@ function shell(content) {
 
 function wireCommon() {
 	app.querySelectorAll('[data-game]').forEach(b => {
-		b.addEventListener('click', () => send({
-			type: 'select_game',
-			gameId: b.dataset.game
-		}));
+ b.addEventListener('click', () => send({
+ type: 'select_game',
+ gameId: b.dataset.game
+ }));
 	});
 	app.querySelectorAll('[data-action]').forEach(b => {
-		b.addEventListener('click', () => {
-			let payload = {};
-			if (b.dataset.payload) {
-				try {
-					payload = JSON.parse(b.dataset.payload);
-				} catch (e) {
-					console.error('Invalid button payload:', e);
-					return;
-				}
-			}
-			send({
-				type: b.dataset.action,
-				...payload
-			});
-		});
+ b.addEventListener('click', () => {
+ let payload = {};
+ if (b.dataset.payload) {
+ try {
+ payload = JSON.parse(b.dataset.payload);
+ } catch (e) {
+ console.error('Invalid button payload:', e);
+ return;
+ }
+ }
+ send({
+ type: b.dataset.action,
+ ...payload
+ });
+ });
 	});
 	app.querySelector('#back-menu')?.addEventListener('click', () => send({
-		type: 'menu'
+ type: 'menu'
 	}));
 	app.querySelector('#rematch')?.addEventListener('click', () => send({
-		type: 'rematch'
+ type: 'rematch'
 	}));
 }
 /* =====================================================================
@@ -169,25 +169,25 @@ async function showLeaderboard() {
 	if (!detail) return;
 	detail.innerHTML = '<p>Loading leaderboard...</p>';
 	try {
-		const res = await fetch('/api/leaderboard', {
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			method: 'POST',
-			body: JSON.stringify({
-				accessToken: session?.accessToken,
-				guildId: session?.guildId
-			}),
-		});
-		const data = await res.json();
-		if (!data.ok) throw new Error(data.error || 'Failed to load leaderboard');
-		const players = data.leaderboard || [];
-		if (!players.length) {
-			detail.innerHTML = '<p>No players have competed yet.</p>';
-			return;
-		}
-		const medals = ['', '', ''];
-		detail.innerHTML = `
+ const res = await fetch('/api/leaderboard', {
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ method: 'POST',
+ body: JSON.stringify({
+ accessToken: session?.accessToken,
+ guildId: session?.guildId
+ }),
+ });
+ const data = await res.json();
+ if (!data.ok) throw new Error(data.error || 'Failed to load leaderboard');
+ const players = data.leaderboard || [];
+ if (!players.length) {
+ detail.innerHTML = '<p>No players have competed yet.</p>';
+ return;
+ }
+ const medals = ['', '', ''];
+ detail.innerHTML = `
  <div class="leaderboard">
  <h3> Kingshot Leaderboard</h3>
  ${players.map((p, i) => `
@@ -201,7 +201,7 @@ async function showLeaderboard() {
  </div>
  `;
 	} catch (e) {
-		detail.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+ detail.innerHTML = `<p class="error">${esc(e.message)}</p>`;
 	}
 }
 /* =====================================================================
@@ -226,30 +226,30 @@ function showInvitePanel() {
  </div>
  `;
 	document.getElementById('invite-player-btn')?.addEventListener('click', async () => {
-		const game = document.getElementById('invite-game')?.value || 'ttt';
-		const user = prompt('Enter the Discord User ID of the player you want to invite:');
-		if (!user) return;
-		send({
-			type: 'event',
-			sub: 'invite',
-			game,
-			target: user,
-			targetType: 'player'
-		});
-		document.getElementById('invite-detail').innerHTML = `<p>[OK] Invite sent to player <code>${esc(user)}</code> for <strong>${esc(game)}</strong>!</p>`;
+ const game = document.getElementById('invite-game')?.value || 'ttt';
+ const user = prompt('Enter the Discord User ID of the player you want to invite:');
+ if (!user) return;
+ send({
+ type: 'event',
+ sub: 'invite',
+ game,
+ target: user,
+ targetType: 'player'
+ });
+ document.getElementById('invite-detail').innerHTML = `<p>[OK] Invite sent to player <code>${esc(user)}</code> for <strong>${esc(game)}</strong>!</p>`;
 	});
 	document.getElementById('invite-channel-btn')?.addEventListener('click', async () => {
-		const game = document.getElementById('invite-game')?.value || 'ttt';
-		const channel = prompt('Enter the Discord Channel ID to post the invite:');
-		if (!channel) return;
-		send({
-			type: 'event',
-			sub: 'invite',
-			game,
-			target: channel,
-			targetType: 'channel'
-		});
-		document.getElementById('invite-detail').innerHTML = `<p>[OK] Invite posted to channel <code>${esc(channel)}</code> for <strong>${esc(game)}</strong>!</p>`;
+ const game = document.getElementById('invite-game')?.value || 'ttt';
+ const channel = prompt('Enter the Discord Channel ID to post the invite:');
+ if (!channel) return;
+ send({
+ type: 'event',
+ sub: 'invite',
+ game,
+ target: channel,
+ targetType: 'channel'
+ });
+ document.getElementById('invite-detail').innerHTML = `<p>[OK] Invite posted to channel <code>${esc(channel)}</code> for <strong>${esc(game)}</strong>!</p>`;
 	});
 }
 /* =====================================================================
@@ -260,8 +260,8 @@ function renderEventDesk() {
  <section class="intro game-intro">
  <button class="back-button" id="back-menu"><- All games</button>
  <div class="eyebrow">KINGSHOT ARCADE</div>
- <h2> Event Desk</h2>
- <p>Post and schedule event announcements for your guild.</p>
+ <h2>Event Desk</h2>
+ <p>Reminders, announcements, and LIVE posts for your guild (admin).</p>
  </section>
 
  <section class="match-card">
@@ -276,39 +276,39 @@ function renderEventDesk() {
  </section>
  `);
 	app.querySelector('[data-action="event:post"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'post'
-		});
-		showEventForm('post');
+ send({
+ type: 'event',
+ sub: 'post'
+ });
+ showEventForm('post');
 	});
 	app.querySelector('[data-action="event:quick"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'quick'
-		});
-		quickEvent();
+ send({
+ type: 'event',
+ sub: 'quick'
+ });
+ quickEvent();
 	});
 	app.querySelector('[data-action="event:list"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'list'
-		});
-		listEvents();
+ send({
+ type: 'event',
+ sub: 'list'
+ });
+ listEvents();
 	});
 	app.querySelector('[data-action="event:leaderboard"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'leaderboard'
-		});
-		showLeaderboard();
+ send({
+ type: 'event',
+ sub: 'leaderboard'
+ });
+ showLeaderboard();
 	});
 	app.querySelector('[data-action="event:invite"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'invite'
-		});
-		showInvitePanel();
+ send({
+ type: 'event',
+ sub: 'invite'
+ });
+ showInvitePanel();
 	});
 }
 
@@ -333,35 +333,35 @@ function showEventForm(mode) {
  </div>
  `;
 	detail.querySelector('#ev-cancel')?.addEventListener('click', () => {
-		detail.innerHTML = '';
+ detail.innerHTML = '';
 	});
 	detail.querySelector('#ev-submit')?.addEventListener('click', async () => {
-		const event = detail.querySelector('#ev-event').value.trim();
-		const title = detail.querySelector('#ev-title').value.trim();
-		const content = detail.querySelector('#ev-content').value.trim();
-		const image = detail.querySelector('#ev-image').value.trim();
-		if (!event || !title || !content) {
-			alert('Please fill in event name, title, and content.');
-			return;
-		}
-		send({
-			type: 'event',
-			sub: mode,
-			event,
-			title,
-			content,
-			image
-		});
-		detail.innerHTML = '<p>[OK] Submitted! Check Discord for the result.</p>';
+ const event = detail.querySelector('#ev-event').value.trim();
+ const title = detail.querySelector('#ev-title').value.trim();
+ const content = detail.querySelector('#ev-content').value.trim();
+ const image = detail.querySelector('#ev-image').value.trim();
+ if (!event || !title || !content) {
+ alert('Please fill in event name, title, and content.');
+ return;
+ }
+ send({
+ type: 'event',
+ sub: mode,
+ event,
+ title,
+ content,
+ image
+ });
+ detail.innerHTML = '<p>[OK] Submitted! Check Discord for the result.</p>';
 	});
 }
 async function quickEvent() {
 	const event = prompt('Event name (e.g. Bear Trap):', 'Bear Trap');
 	if (!event) return;
 	send({
-		type: 'event',
-		sub: 'quick',
-		event
+ type: 'event',
+ sub: 'quick',
+ event
 	});
 }
 async function listEvents() {
@@ -369,24 +369,24 @@ async function listEvents() {
 	if (!detail) return;
 	detail.innerHTML = '<p>Loading scheduled events...</p>';
 	try {
-		const res = await fetch('/api/event/list', {
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			method: 'POST',
-			body: JSON.stringify({
-				accessToken: session?.accessToken,
-				guildId: session?.guildId
-			}),
-		});
-		const data = await res.json();
-		if (!data.ok) throw new Error(data.error || 'Failed to load events');
-		const blogs = data.blogs || [];
-		if (!blogs.length) {
-			detail.innerHTML = '<p>No scheduled events yet.</p>';
-			return;
-		}
-		detail.innerHTML = blogs.map(b => `
+ const res = await fetch('/api/event/list', {
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ method: 'POST',
+ body: JSON.stringify({
+ accessToken: session?.accessToken,
+ guildId: session?.guildId
+ }),
+ });
+ const data = await res.json();
+ if (!data.ok) throw new Error(data.error || 'Failed to load events');
+ const blogs = data.blogs || [];
+ if (!blogs.length) {
+ detail.innerHTML = '<p>No scheduled events yet.</p>';
+ return;
+ }
+ detail.innerHTML = blogs.map(b => `
  <div class="event-list-item">
  <strong>${esc(b.title)}</strong> <code>${esc(b.id)}</code>
  <div>${esc(b.event)} | ${esc(b.channelId ? `<#${b.channelId}>` : 'no channel')} | ${b.enabled ? 'Enabled' : 'Disabled'}</div>
@@ -396,44 +396,44 @@ async function listEvents() {
  </div>
  </div>
  `).join('');
-		detail.querySelectorAll('[data-event-delete]').forEach(b => {
-			b.addEventListener('click', async () => {
-				const id = b.dataset.eventDelete;
-				await fetch('/api/event/delete', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						accessToken: session?.accessToken,
-						guildId: session?.guildId,
-						id
-					})
-				});
-				listEvents();
-			});
-		});
-		detail.querySelectorAll('[data-event-toggle]').forEach(b => {
-			b.addEventListener('click', async () => {
-				const id = b.dataset.eventToggle;
-				const enabled = b.dataset.enabled !== 'true';
-				await fetch('/api/event/toggle', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						accessToken: session?.accessToken,
-						guildId: session?.guildId,
-						id,
-						enabled
-					})
-				});
-				listEvents();
-			});
-		});
+ detail.querySelectorAll('[data-event-delete]').forEach(b => {
+ b.addEventListener('click', async () => {
+ const id = b.dataset.eventDelete;
+ await fetch('/api/event/delete', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ body: JSON.stringify({
+ accessToken: session?.accessToken,
+ guildId: session?.guildId,
+ id
+ })
+ });
+ listEvents();
+ });
+ });
+ detail.querySelectorAll('[data-event-toggle]').forEach(b => {
+ b.addEventListener('click', async () => {
+ const id = b.dataset.eventToggle;
+ const enabled = b.dataset.enabled !== 'true';
+ await fetch('/api/event/toggle', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json'
+ },
+ body: JSON.stringify({
+ accessToken: session?.accessToken,
+ guildId: session?.guildId,
+ id,
+ enabled
+ })
+ });
+ listEvents();
+ });
+ });
 	} catch (e) {
-		detail.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+ detail.innerHTML = `<p class="error">${esc(e.message)}</p>`;
 	}
 }
 /* =====================================================================
@@ -494,7 +494,7 @@ function boardTtt(g) {
 
 function boardConnect(g) {
 	const win = new Set(
-		(g.winningCells || []).map(([r, c]) => `${r}-${c}`));
+ (g.winningCells || []).map(([r, c]) => `${r}-${c}`));
 	return `
  <div class="c4-board">
  ${Array.from({ length: 7 }, (_, c) => ` < button
@@ -502,7 +502,7 @@ function boardConnect(g) {
 	data - action = "drop"
 	data - payload = '{"col":${c}}'
 	$ {
-		state.players.length < 2 || g.status !== 'playing' || g.turn !== me() ? 'disabled' : ''
+ state.players.length < 2 || g.status !== 'playing' || g.turn !== me() ? 'disabled' : ''
 	} > < /button>
 	`).join('')}
 
@@ -521,23 +521,23 @@ function renderGame() {
 	// Show what other players are doing
 	const otherPlayers = (state.players || []).filter(p => p.id !== session?.user?.id);
 	const otherPlaying = otherPlayers.map(p => {
-		// We don't have per-player game state from the server in this view,
-		// but we can show who's in the room
-		return ` < span class = "player-tag" > $ {
+ // We don't have per-player game state from the server in this view,
+ // but we can show who's in the room
+ return ` < span class = "player-tag" > $ {
  esc(p.username)
 	} < /span>`;
 	}).join(' ');
 	if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.length < 2) {
-		status = 'Waiting for your opponent to join';
+ status = 'Waiting for your opponent to join';
 	} else if (g.id === 'ttt') {
-		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn' : "Opponent's turn") : g.status === 'draw' ? 'Board is full' : g.winner === me() ? 'You connected three!' : 'Opponent connected three.';
-		body = boardTtt(g);
+ status = g.status === 'playing' ? (g.turn === me() ? 'Your turn' : "Opponent's turn") : g.status === 'draw' ? 'Board is full' : g.winner === me() ? 'You connected three!' : 'Opponent connected three.';
+ body = boardTtt(g);
 	} else if (g.id === 'connect4') {
-		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn - choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
-		body = boardConnect(g);
+ status = g.status === 'playing' ? (g.turn === me() ? 'Your turn - choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
+ body = boardConnect(g);
 	} else if (g.id === 'rps') {
-		status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed - continue when ready' : g.picks[me()] ? 'Choice locked - waiting for opponent' : 'Choose your move';
-		body = `
+ status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed - continue when ready' : g.picks[me()] ? 'Choice locked - waiting for opponent' : 'Choose your move';
+ body = `
  <div class="score-strip">
  <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.wins[0]}</b></div>
  <span>ROUND ${g.round} / 3</span>
@@ -561,8 +561,8 @@ function renderGame() {
  `}
  `;
 	} else if (g.id === 'reaction') {
-		status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signal...' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || ' - '} ms`;
-		body = `
+ status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signal...' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || ' - '} ms`;
+ body = `
  <div class="reaction-zone ${g.phase === 'go' ? 'go' : ''}">
  <div class="reaction-symbol">${g.phase === 'go' ? '[!]' : g.phase === 'countdown' ? '' : g.phase === 'false-start' ? '' : '[!]'}</div>
  <h3>${g.phase === 'go' ? 'TAP!' : g.phase === 'countdown' ? 'WAIT...' : g.phase === 'false-start' ? 'Too early!' : g.phase === 'done' ? 'Finished' : 'Get ready'}</h3>
@@ -570,9 +570,9 @@ function renderGame() {
  </div>
  `;
 	} else if (g.id === 'trivia' || g.id === 'daily') {
-		const q = g.question;
-		status = `Question ${g.index + 1} of 5 | ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
-		body = `
+ const q = g.question;
+ status = `Question ${g.index + 1} of 5 | ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
+ body = `
  <div class="score-strip">
  <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
  <span>${g.id === 'daily' ? 'DAILY CHALLENGE' : 'TRIVIA'}</span>
@@ -595,8 +595,8 @@ function renderGame() {
  ` : ''}
  `;
 	} else if (g.id === 'guess') {
-		status = `Possible range ${g.low}-${g.high} | ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
-		body = `
+ status = `Possible range ${g.low}-${g.high} | ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
+ body = `
  <div class="score-strip">
  <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.guesses[0].length}/${g.maxGuesses}</b></div>
  <span>FIND THE NUMBER</span>
@@ -619,12 +619,12 @@ function renderGame() {
  </div>
  `;
 	} else if (g.id === 'hangman') {
-		const guessed = new Set(g.guessed || []);
-		status = `${g.lives} lives remaining | ${(g.guessed || []).length} letters guessed`;
-		const revealedLetters = g.revealed || Array.from({
-			length: g.wordLength || 8
-		}, () => '_');
-		body = `
+ const guessed = new Set(g.guessed || []);
+ status = `${g.lives} lives remaining | ${(g.guessed || []).length} letters guessed`;
+ const revealedLetters = g.revealed || Array.from({
+ length: g.wordLength || 8
+ }, () => '_');
+ body = `
  <div class="hangman-card">
  <div class="hang-word">${revealedLetters.map(x => `<span>${esc(x)}</span>`).join('')}</div>
  <div class="letter-grid">
@@ -636,8 +636,8 @@ function renderGame() {
  </div>
  `;
 	} else if (g.id === 'scramble') {
-		status = `Word ${g.index + 1} of 5 | ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
-		body = `
+ status = `Word ${g.index + 1} of 5 | ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
+ body = `
  <div class="score-strip">
  <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
  <span>WORD SCRAMBLE</span>
@@ -670,36 +670,38 @@ function renderGame() {
  `;
 	shell(gameHtml);
 	app.querySelector('#guess-form')?.addEventListener('submit', e => {
-		e.preventDefault();
-		send({
-			type: 'guess',
-			value: Number(app.querySelector('#guess-value').value)
-		});
+ e.preventDefault();
+ send({
+ type: 'guess',
+ value: Number(app.querySelector('#guess-value').value)
+ });
 	});
 	app.querySelector('#scramble-form')?.addEventListener('submit', e => {
-		e.preventDefault();
-		send({
-			type: 'solve',
-			answer: app.querySelector('#scramble-answer').value
-		});
+ e.preventDefault();
+ send({
+ type: 'solve',
+ answer: app.querySelector('#scramble-answer').value
+ });
 	});
 }
 
 function render() {
 	if (!state?.selectedGame || !state?.game) {
-		renderMenu();
+ renderMenu();
 	} else {
-		renderGame();
+ renderGame();
 	}
 }
 
 function renderMenu() {
 	const players = state?.players || [];
 	const gameInfo = state?.gameInfo || {};
-	const activeGames = players.filter((p) => p && p.isPlaying && p.currentGame).map((p) => ({
-		username: p.username || 'Player',
-		game: (gameInfo[p.currentGame] && gameInfo[p.currentGame].name) || p.currentGame,
-	}));
+	const activeGames = players
+ .filter((p) => p && p.isPlaying && p.currentGame)
+ .map((p) => ({
+ username: p.username || 'Player',
+ game: (gameInfo[p.currentGame] && gameInfo[p.currentGame].name) || p.currentGame,
+ }));
 	shell(`
  <section class="intro">
  <div class="eyebrow">PXD ALLIANCE | THE ROYAL GAME HALL</div>
@@ -749,25 +751,25 @@ function renderMenu() {
  `);
 	// Wire Event Desk button
 	app.querySelector('[data-action="event:desk"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'desk'
-		});
-		renderEventDesk();
+ send({
+ type: 'event',
+ sub: 'desk'
+ });
+ renderEventDesk();
 	});
 	app.querySelector('[data-action="event:leaderboard"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'leaderboard'
-		});
-		showLeaderboard();
+ send({
+ type: 'event',
+ sub: 'leaderboard'
+ });
+ showLeaderboard();
 	});
 	app.querySelector('[data-action="event:invite"]')?.addEventListener('click', () => {
-		send({
-			type: 'event',
-			sub: 'invite'
-		});
-		showInvitePanel();
+ send({
+ type: 'event',
+ sub: 'invite'
+ });
+ showInvitePanel();
 	});
 }
 
@@ -775,42 +777,42 @@ function connectSocket() {
 	const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
 	socket = new WebSocket(`${protocol}//${location.host}/ws`);
 	socket.addEventListener('open', () => {
-		socket.send(JSON.stringify({
-			type: 'auth',
-			accessToken: session.accessToken,
-			instanceId: session.instanceId
-		}));
+ socket.send(JSON.stringify({
+ type: 'auth',
+ accessToken: session.accessToken,
+ instanceId: session.instanceId
+ }));
 	});
 	socket.addEventListener('message', e => {
-		let m;
-		try {
-			m = JSON.parse(e.data);
-		} catch {
-			return;
-		}
-		if (m.type === 'error') {
-			errorText = m.message || 'Game server error';
-			render();
-		}
-		if (m.type === 'ready') {
-			connected = true;
-			errorText = '';
-			render();
-		}
-		if (m.type === 'state') {
-			connected = true;
-			errorText = '';
-			state = m.state;
-			render();
-		}
+ let m;
+ try {
+ m = JSON.parse(e.data);
+ } catch {
+ return;
+ }
+ if (m.type === 'error') {
+ errorText = m.message || 'Game server error';
+ render();
+ }
+ if (m.type === 'ready') {
+ connected = true;
+ errorText = '';
+ render();
+ }
+ if (m.type === 'state') {
+ connected = true;
+ errorText = '';
+ state = m.state;
+ render();
+ }
 	});
 	socket.addEventListener('close', () => {
-		connected = false;
-		render();
+ connected = false;
+ render();
 	});
 	socket.addEventListener('error', () => {
-		errorText = 'Could not connect to the game server.';
-		render();
+ errorText = 'Could not connect to the game server.';
+ render();
 	});
 }
 async function boot() {
@@ -822,11 +824,11 @@ async function boot() {
  </section>
  `);
 	try {
-		session = await connectDiscord();
-		connectSocket();
+ session = await connectDiscord();
+ connectSocket();
 	} catch (e) {
-		errorText = e?.message || 'Could not start Activity.';
-		shell(`
+ errorText = e?.message || 'Could not start Activity.';
+ shell(`
  <section class="intro">
  <h2>Unable to connect</h2>
  <p>${esc(errorText)}</p>

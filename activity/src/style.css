@@ -642,79 +642,79 @@ button {
 }
 @media(max-width:650px) {
 	.topbar {
-		height: 66px;
-		padding: 0 15px
+ height: 66px;
+ padding: 0 15px
 	}
 	.content {
-		padding-top: 27px
+ padding-top: 27px
 	}
 	.game-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 9px
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 9px
 	}
 	.game-tile {
-		min-height: 160px;
-		padding: 13px
+ min-height: 160px;
+ padding: 13px
 	}
 	.match-card {
-		padding: 14px
+ padding: 14px
 	}
 	.players {
-		grid-template-columns: 1fr 24px 1fr;
-		gap: 5px
+ grid-template-columns: 1fr 24px 1fr;
+ gap: 5px
 	}
 	.player {
-		padding: 8px 6px;
-		gap: 6px
+ padding: 8px 6px;
+ gap: 6px
 	}
 	.avatar {
-		width: 29px;
-		height: 29px;
-		flex-basis: 29px
+ width: 29px;
+ height: 29px;
+ flex-basis: 29px
 	}
 	.player-copy strong {
-		font-size: 10px
+ font-size: 10px
 	}
 	.player-copy span {
-		font-size: 9px
+ font-size: 9px
 	}
 	.seat {
-		font-size: 9px
+ font-size: 9px
 	}
 	.answer-grid {
-		grid-template-columns: 1fr
+ grid-template-columns: 1fr
 	}
 	.question-card, .guess-card, .hangman-card, .scramble-card {
-		padding: 15px
+ padding: 15px
 	}
 	.letter-grid {
-		grid-template-columns: repeat(9, 1fr)
+ grid-template-columns: repeat(9, 1fr)
 	}
 	.game-footer {
-		line-height: 1.5
+ line-height: 1.5
 	}
 }
 @media(max-width:380px) {
 	.game-grid {
-		grid-template-columns: 1fr
+ grid-template-columns: 1fr
 	}
 	.game-tile {
-		min-height: 140px
+ min-height: 140px
 	}
 	.connection {
-		font-size: 10px
+ font-size: 10px
 	}
 	.score-strip {
-		padding: 9px
+ padding: 9px
 	}
 	.score-strip > span {
-		font-size: 8px
+ font-size: 8px
 	}
 	.hang-word {
-		gap: 3px
+ gap: 3px
 	}
 	.hang-word span {
-		width: 23px
+ width: 23px
 	}
 }
 /* PXD Alliance - Kingshot royal war-room visual theme */
@@ -725,9 +725,9 @@ button {
 }
 body {
 	background:
-		radial-gradient(ellipse at 50% -24%, #6b4a1e55 0, transparent 48%),
-		radial-gradient(ellipse at 100% 30%, #34271966 0, transparent 42%),
-		linear-gradient(145deg, #17140f, #0d0d0c 68%, #17120c);
+ radial-gradient(ellipse at 50% -24%, #6b4a1e55 0, transparent 48%),
+ radial-gradient(ellipse at 100% 30%, #34271966 0, transparent 42%),
+ linear-gradient(145deg, #17140f, #0d0d0c 68%, #17120c);
 }
 .topbar {
 	border-bottom: 1px solid #b88a3b55;
@@ -809,8 +809,8 @@ body {
 	border: 1px solid #a17b3f66;
 	border-radius: 10px;
 	background:
-		linear-gradient(145deg, #342919ee, #1b1710f5 70%),
-		repeating-linear-gradient(45deg, #ffffff05 0 1px, transparent 1px 7px);
+ linear-gradient(145deg, #342919ee, #1b1710f5 70%),
+ repeating-linear-gradient(45deg, #ffffff05 0 1px, transparent 1px 7px);
 	box-shadow: 0 9px 24px #0005, inset 0 1px #f5d28a12;
 }
 .game-tile:hover {
@@ -850,20 +850,20 @@ button:focus-visible, input:focus-visible {
 }
 @media (max-width: 620px) {
 	.topbar {
-		padding: 0 15px;
-		height: 66px;
+ padding: 0 15px;
+ height: 66px;
 	}
 	.content {
-		width: min(100% - 22px, 520px);
-		padding-top: 25px;
+ width: min(100% - 22px, 520px);
+ padding-top: 25px;
 	}
 	.game-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 10px;
+ grid-template-columns: repeat(2, minmax(0, 1fr));
+ gap: 10px;
 	}
 	.game-tile {
-		min-height: 165px;
-		padding: 13px;
+ min-height: 165px;
+ padding: 13px;
 	}
 }
 /* Event Desk styles */

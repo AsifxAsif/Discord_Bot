@@ -28,11 +28,11 @@ const sessions = new Map();
 function createSession(type, data) {
 	const id = crypto.randomBytes(4).toString('hex'); // 8 chars - keeps customIds short
 	const s = {
-		id,
-		type,
-		createdAt: Date.now(),
-		timers: {},
-		...data
+ id,
+ type,
+ createdAt: Date.now(),
+ timers: {},
+ ...data
 	};
 	sessions.set(id, s);
 	return s;
@@ -54,18 +54,18 @@ function endSession(id) {
 function setTimer(s, name, ms, fn) {
 	clearTimeout(s.timers[name]);
 	s.timers[name] = setTimeout(async () => {
-		try {
-			await fn();
-		} catch (e) {
-			console.error(`[games] timer ${name} failed:`, e.message);
-		}
+ try {
+ await fn();
+ } catch (e) {
+ console.error(`[games] timer ${name} failed:`, e.message);
+ }
 	}, ms);
 }
 // sweep abandoned sessions
 setInterval(() => {
 	const cutoff = Date.now() - 60 * 60 * 1000;
 	for (const [id, s] of sessions)
-		if (s.createdAt < cutoff) endSession(id);
+ if (s.createdAt < cutoff) endSession(id);
 }, 10 * 60 * 1000).unref();
 /* ---------- UI helpers ---------- */
 function embed({
@@ -80,7 +80,7 @@ function embed({
 	if (description) e.setDescription(description);
 	if (fields && fields.length) e.addFields(fields);
 	e.setFooter({
-		text: footer ? `${BRAND} | ${footer}` : `${BRAND} | Games`
+ text: footer ? `${BRAND} | ${footer}` : `${BRAND} | Games`
 	});
 	return e;
 }
@@ -118,8 +118,8 @@ const ts = (ms) => Math.floor(ms / 1000);
 function shuffle(arr) {
 	const a = [...arr];
 	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[a[i], a[j]] = [a[j], a[i]];
+ const j = Math.floor(Math.random() * (i + 1));
+ [a[i], a[j]] = [a[j], a[i]];
 	}
 	return a;
 }
@@ -132,9 +132,9 @@ const respond = (interaction, payload, update = false) => update ? interaction.u
 });
 const expired = (interaction) => interaction.reply({
 	embeds: [embed({
-		title: '[X] Game expired',
-		description: 'That game has ended. Start a new one with `/games`.',
-		color: 'neutral'
+ title: '[X] Game expired',
+ description: 'That game has ended. Start a new one with `/games`.',
+ color: 'neutral'
 	})],
 	flags: EPH,
 });

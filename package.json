@@ -4,23 +4,23 @@
 	"description": "Kingshot Discord bot - gift code AUTOREDEEM, event reminders, interactive games",
 	"main": "index.js",
 	"scripts": {
-		"start": "node start.js",
-		"register": "node register-commands.js",
-		"dev": "node index.js",
-		"activity:install": "npm --prefix activity install",
-		"activity:build": "npm --prefix activity run build",
-		"build": "npm run activity:install && npm run activity:build"
+ "start": "node start.js",
+ "register": "node register-commands.js",
+ "dev": "node index.js",
+ "activity:install": "npm --prefix activity install",
+ "activity:build": "npm --prefix activity run build",
+ "build": "npm run activity:install && npm run activity:build"
 	},
 	"keywords": [
-		"discord",
-		"bot",
-		"kingshot",
-		"giftcode"
+ "discord",
+ "bot",
+ "kingshot",
+ "giftcode"
 	],
 	"license": "MIT",
 	"dependencies": {
-		"discord.js": "^14.16.3",
-		"dotenv": "^16.4.5",
-		"ws": "^8.17.0"
+ "discord.js": "^14.16.3",
+ "dotenv": "^16.4.5",
+ "ws": "^8.17.0"
 	}
 }
