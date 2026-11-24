@@ -493,47 +493,51 @@ function boardTtt(g) {
 }
 
 function boardConnect(g) {
-	const win = new Set((g.winningCells || []).map(([r, c]) => `${r}-${c}`));
+	const win = new Set(
+		(g.winningCells || []).map(([r, c]) => `${r}-${c}`));
 	return `
-        <div class="c4-board">
-            ${Array.from({ length: 7 }, (_, c) => ` < button class = "drop-col"
+    <div class="c4-board">
+      ${Array.from({ length: 7 }, (_, c) => ` < button
+	class = "drop-col"
 	data - action = "drop"
 	data - payload = '{"col":${c}}'
 	$ {
 		state.players.length < 2 || g.status !== 'playing' || g.turn !== me() ? 'disabled' : ''
-	} > ▼ < /button>`).join('')}
-	$ {
-		g.board.map((row, r) => row.map((v, c) => `<div class="c4-hole ${v === 'R' ? 'red' : v === 'Y' ? 'yellow' : ''} ${win.has(`${r}-${c}`) ? 'winning' : ''}"></div>`).join('')).join('')
-	} < /div>
-	`;
+	} > ▼ < /button>
+	`).join('')}
+
+      ${g.board.map((row, r) => row.map((v, c) => `
+        <div class="c4-hole ${v === 'R' ? 'red' : v === 'Y' ? 'yellow' : ''} ${win.has(`${r}-${c}`) ? 'winning' : ''}"></div>
+      `).join('')).join('')}
+    </div>
+  `;
 }
 
 function renderGame() {
-    const g = state.game;
-    const info = GAMES.find(x => x.id === g.id) || GAMES[0];
-    let body = '';
-    let status = '';
-
-    // Show what other players are doing
-    const otherPlayers = (state.players || []).filter(p => p.id !== session?.user?.id);
-    const otherPlaying = otherPlayers.map(p => {
-        // We don't have per-player game state from the server in this view,
-        // but we can show who's in the room
-        return ` < span class = "player-tag" > $ {
+	const g = state.game;
+	const info = GAMES.find(x => x.id === g.id) || GAMES[0];
+	let body = '';
+	let status = '';
+	// Show what other players are doing
+	const otherPlayers = (state.players || []).filter(p => p.id !== session?.user?.id);
+	const otherPlaying = otherPlayers.map(p => {
+		// We don't have per-player game state from the server in this view,
+		// but we can show who's in the room
+		return ` < span class = "player-tag" > $ {
 		esc(p.username)
 	} < /span>`;
-}).join(' ');
-if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.length < 2) {
-	status = 'Waiting for your opponent to join';
-} else if (g.id === 'ttt') {
-	status = g.status === 'playing' ? (g.turn === me() ? 'Your turn' : "Opponent's turn") : g.status === 'draw' ? 'Board is full' : g.winner === me() ? 'You connected three!' : 'Opponent connected three.';
-	body = boardTtt(g);
-} else if (g.id === 'connect4') {
-	status = g.status === 'playing' ? (g.turn === me() ? 'Your turn — choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
-	body = boardConnect(g);
-} else if (g.id === 'rps') {
-	status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed — continue when ready' : g.picks[me()] ? 'Choice locked — waiting for opponent' : 'Choose your move';
-	body = `
+	}).join(' ');
+	if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.length < 2) {
+		status = 'Waiting for your opponent to join';
+	} else if (g.id === 'ttt') {
+		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn' : "Opponent's turn") : g.status === 'draw' ? 'Board is full' : g.winner === me() ? 'You connected three!' : 'Opponent connected three.';
+		body = boardTtt(g);
+	} else if (g.id === 'connect4') {
+		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn — choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
+		body = boardConnect(g);
+	} else if (g.id === 'rps') {
+		status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed — continue when ready' : g.picks[me()] ? 'Choice locked — waiting for opponent' : 'Choose your move';
+		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.wins[0]}</b></div>
                 <span>ROUND ${g.round} / 3</span>
@@ -556,19 +560,19 @@ if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.lengt
                 </div>
             `}
         `;
-} else if (g.id === 'reaction') {
-	status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signal…' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || '—'} ms`;
-	body = `
+	} else if (g.id === 'reaction') {
+		status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signal…' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || '—'} ms`;
+		body = `
             <div class="reaction-zone ${g.phase === 'go' ? 'go' : ''}">
                 <div class="reaction-symbol">${g.phase === 'go' ? '⚡' : g.phase === 'countdown' ? '⏳' : g.phase === 'false-start' ? '⛔' : '⚡'}</div>
                 <h3>${g.phase === 'go' ? 'TAP!' : g.phase === 'countdown' ? 'WAIT…' : g.phase === 'false-start' ? 'Too early!' : g.phase === 'done' ? 'Finished' : 'Get ready'}</h3>
                 <button class="primary-button reaction-button" data-action="tap" ${g.phase !== 'go' ? 'disabled' : ''}>${g.phase === 'go' ? 'TAP NOW' : 'WAIT FOR GO'}</button>
             </div>
         `;
-} else if (g.id === 'trivia' || g.id === 'daily') {
-	const q = g.question;
-	status = `Question ${g.index + 1} of 5 · ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
-	body = `
+	} else if (g.id === 'trivia' || g.id === 'daily') {
+		const q = g.question;
+		status = `Question ${g.index + 1} of 5 · ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
+		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
                 <span>${g.id === 'daily' ? 'DAILY CHALLENGE' : 'TRIVIA'}</span>
@@ -590,9 +594,9 @@ if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.lengt
                 </div>
             ` : ''}
         `;
-} else if (g.id === 'guess') {
-	status = `Possible range ${g.low}–${g.high} · ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
-	body = `
+	} else if (g.id === 'guess') {
+		status = `Possible range ${g.low}–${g.high} · ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
+		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.guesses[0].length}/${g.maxGuesses}</b></div>
                 <span>FIND THE NUMBER</span>
@@ -614,13 +618,13 @@ if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.lengt
                 </div>
             </div>
         `;
-} else if (g.id === 'hangman') {
-	const guessed = new Set(g.guessed || []);
-	status = `${g.lives} lives remaining · ${(g.guessed || []).length} letters guessed`;
-	const revealedLetters = g.revealed || Array.from({
-		length: g.wordLength || 8
-	}, () => '_');
-	body = `
+	} else if (g.id === 'hangman') {
+		const guessed = new Set(g.guessed || []);
+		status = `${g.lives} lives remaining · ${(g.guessed || []).length} letters guessed`;
+		const revealedLetters = g.revealed || Array.from({
+			length: g.wordLength || 8
+		}, () => '_');
+		body = `
             <div class="hangman-card">
                 <div class="hang-word">${revealedLetters.map(x => `<span>${esc(x)}</span>`).join('')}</div>
                 <div class="letter-grid">
@@ -631,9 +635,9 @@ if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.lengt
                 <button class="ghost-button" data-action="hint" ${g.lives <= 1 || g.status !== 'playing' ? 'disabled' : ''}>Reveal a letter · −1 life</button>
             </div>
         `;
-} else if (g.id === 'scramble') {
-	status = `Word ${g.index + 1} of 5 · ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
-	body = `
+	} else if (g.id === 'scramble') {
+		status = `Word ${g.index + 1} of 5 · ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
+		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
                 <span>WORD SCRAMBLE</span>
@@ -648,8 +652,8 @@ if (['ttt', 'connect4', 'rps', 'reaction'].includes(g.id) && state.players.lengt
                 ${g.roundDone ? `<p class="answer-feedback">${esc(state.players[g.roundWinner]?.username || 'Player')} solved it! +10 points</p><button class="primary-button" data-action="next_word">Next word →</button>` : ''}
             </div>
         `;
-}
-const gameHtml = `
+	}
+	const gameHtml = `
         <section class="intro game-intro">
             <button class="back-button" id="back-menu">← All games</button>
             <div class="eyebrow">KINGSHOT ARCADE</div>
@@ -664,21 +668,21 @@ const gameHtml = `
             <div class="game-footer">${state.players.length < 2 ? 'Invite a friend to this Activity to play together.' : 'Moves are validated by the game server.'}</div>
         </section>
     `;
-shell(gameHtml);
-app.querySelector('#guess-form')?.addEventListener('submit', e => {
-	e.preventDefault();
-	send({
-		type: 'guess',
-		value: Number(app.querySelector('#guess-value').value)
+	shell(gameHtml);
+	app.querySelector('#guess-form')?.addEventListener('submit', e => {
+		e.preventDefault();
+		send({
+			type: 'guess',
+			value: Number(app.querySelector('#guess-value').value)
+		});
 	});
-});
-app.querySelector('#scramble-form')?.addEventListener('submit', e => {
-	e.preventDefault();
-	send({
-		type: 'solve',
-		answer: app.querySelector('#scramble-answer').value
+	app.querySelector('#scramble-form')?.addEventListener('submit', e => {
+		e.preventDefault();
+		send({
+			type: 'solve',
+			answer: app.querySelector('#scramble-answer').value
+		});
 	});
-});
 }
 
 function render() {
