@@ -1,5 +1,5 @@
 /**
- * Game content â€” ALL Kingshot. Edit freely, add your own.
+ * Game content - ALL Kingshot. Edit freely, add your own.
  *
  * Each trivia item: { q: question, a: correct answer, w: [3 wrong answers] }
  * Facts were checked against community guides/wikis (Nov 2026). Kingshot gets
@@ -82,9 +82,9 @@ const RESOURCES = [{
 	a: 'Truegold',
 	w: ['Bread', 'Stone', 'Iron']
 }, {
-	q: 'Which Breadâ€“Woodâ€“Stoneâ€“Iron ratio do players commonly aim to keep?',
-	a: '20â€“20â€“4â€“1',
-	w: ['1â€“1â€“1â€“1', '10â€“5â€“2â€“1', '4â€“4â€“2â€“1']
+	q: 'Which Bread-Wood-Stone-Iron ratio do players commonly aim to keep?',
+	a: '20-20-4-1',
+	w: ['1-1-1-1', '10-5-2-1', '4-4-2-1']
 }, {
 	q: 'Which building turns Bread, Wood, Stone and Iron into Truegold?',
 	a: 'Truegold Crucible',
@@ -94,7 +94,7 @@ const RESOURCES = [{
 	a: '5',
 	w: ['3', '7', '10']
 }, {
-	q: 'Truegold is mainly used forâ€¦',
+	q: 'Truegold is mainly used for...',
 	a: 'Upgrading buildings',
 	w: ['Training troops', 'Hero skins', 'Buying gold']
 }, {
@@ -311,7 +311,8 @@ const PETS = [{
 	w: ['Taming Marks', 'Forgehammers', 'Widgets']
 }, {
 	q: 'What do Taming Marks do?',
-	a: 'Refine a petâ€™s secondary stats',
+	a: 'Refine a pet'
+	s secondary stats ',
 	w: ['Level up pets', 'Train troops', 'Unlock heroes']
 }, {
 	q: 'How many secondary stats does pet refinement affect?',
@@ -322,7 +323,7 @@ const PETS = [{
 	cat: 'Pets'
 }));
 const TRIVIA = [...TROOPS, ...RESOURCES, ...BUILDINGS, ...HEROES, ...EVENTS, ...PETS];
-// Hangman + Scramble words â€” all Kingshot terms (Aâ€“Z only, 5+ letters, no spaces)
+// Hangman + Scramble words - all Kingshot terms (A-Z only, 5+ letters, no spaces)
 const WORDS = [
 	// troops & buildings
 	'CAVALRY', 'INFANTRY', 'ARCHER', 'BARRACKS', 'STABLE', 'EMBASSY', 'INFIRMARY', 'STOREHOUSE', 'ACADEMY', 'CRUCIBLE', 'TOWNCENTER', 'GARRISON', 'LETHALITY', 'TERROR',

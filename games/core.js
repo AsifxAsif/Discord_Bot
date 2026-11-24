@@ -26,7 +26,7 @@ const COLORS = {
 const sessions = new Map();
 
 function createSession(type, data) {
-	const id = crypto.randomBytes(4).toString('hex'); // 8 chars â€” keeps customIds short
+	const id = crypto.randomBytes(4).toString('hex'); // 8 chars - keeps customIds short
 	const s = {
 		id,
 		type,
@@ -80,7 +80,7 @@ function embed({
 	if (description) e.setDescription(description);
 	if (fields && fields.length) e.addFields(fields);
 	e.setFooter({
-		text: footer ? `${BRAND} Â· ${footer}` : `${BRAND} Â· Games`
+		text: footer ? `${BRAND} | ${footer}` : `${BRAND} | Games`
 	});
 	return e;
 }
@@ -109,9 +109,9 @@ function modal(id, title, inputId, label, {
 }
 const bar = (v, max, len = 10) => {
 	const f = Math.max(0, Math.min(len, Math.round((v / max) * len)));
-	return 'â–°'.repeat(f) + 'â–±'.repeat(len - f);
+	return '#'.repeat(f) + '-'.repeat(len - f);
 };
-const hearts = (n, max) => 'â¤ï¸'.repeat(Math.max(0, n)) + 'ðŸ–¤'.repeat(Math.max(0, max - n));
+const hearts = (n, max) => ''.repeat(Math.max(0, n)) + ''.repeat(Math.max(0, max - n));
 const mention = (id) => `<@${id}>`;
 const ts = (ms) => Math.floor(ms / 1000);
 
@@ -132,7 +132,7 @@ const respond = (interaction, payload, update = false) => update ? interaction.u
 });
 const expired = (interaction) => interaction.reply({
 	embeds: [embed({
-		title: 'âŒ› Game expired',
+		title: '[X] Game expired',
 		description: 'That game has ended. Start a new one with `/games`.',
 		color: 'neutral'
 	})],

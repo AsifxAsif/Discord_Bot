@@ -26,13 +26,13 @@ function slotsFooter(userId) {
 	const u = listUser(userId);
 	const pLeft = Math.max(0, MAX_PLAYERS - (u.players || []).length);
 	const aLeft = Math.max(0, MAX_ALLIANCES - (u.alliances || []).length);
-	return `Slots left: ${pLeft}/${MAX_PLAYERS} players Â· ${aLeft}/${MAX_ALLIANCES} alliances Â· AUTOREDEEM ON`;
+	return `Slots left: ${pLeft}/${MAX_PLAYERS} players | ${aLeft}/${MAX_ALLIANCES} alliances | AUTOREDEEM ON`;
 }
 
 function playerEmbed(p, userId) {
-	return new EmbedBuilder().setTitle('âœ… Player registered').setColor(0x57f287).setDescription('This account will receive gift codes automatically.').addFields({
+	return new EmbedBuilder().setTitle('[OK] Player registered').setColor(0x57f287).setDescription('This account will receive gift codes automatically.').addFields({
 		name: 'Name',
-		value: p.name || 'â€”',
+		value: p.name || ' - ',
 		inline: true
 	}, {
 		name: 'Player ID',
@@ -40,7 +40,7 @@ function playerEmbed(p, userId) {
 		inline: true
 	}, {
 		name: 'Kingdom',
-		value: p.kid != null ? String(p.kid) : 'â€”',
+		value: p.kid != null ? String(p.kid) : ' - ',
 		inline: true
 	}).setFooter({
 		text: slotsFooter(userId)
@@ -48,7 +48,7 @@ function playerEmbed(p, userId) {
 }
 
 function allianceEmbed(a, userId) {
-	return new EmbedBuilder().setTitle('âœ… Alliance registered').setColor(0x57f287).setDescription('Gift codes will be redeemed for **all members**.\nNew members are picked up every auto cycle.').addFields({
+	return new EmbedBuilder().setTitle('[OK] Alliance registered').setColor(0x57f287).setDescription('Gift codes will be redeemed for **all members**.\nNew members are picked up every auto cycle.').addFields({
 		name: 'Alliance',
 		value: `**${a.name}** [${a.abbr || a.slug}]`,
 		inline: true
@@ -58,7 +58,7 @@ function allianceEmbed(a, userId) {
 		inline: true
 	}, {
 		name: 'Members',
-		value: a.members != null ? String(a.members) : 'â€”',
+		value: a.members != null ? String(a.members) : ' - ',
 		inline: true
 	}).setFooter({
 		text: slotsFooter(userId)
@@ -100,7 +100,7 @@ async function confirmPlayer(interaction, pick, userId) {
 		});
 	} catch {
 		return interaction.editReply({
-			content: 'â° Timed out.',
+			content: ' Timed out.',
 			embeds: [],
 			components: []
 		});
@@ -108,8 +108,8 @@ async function confirmPlayer(interaction, pick, userId) {
 }
 async function confirmAlliance(interaction, pick, userId) {
 	const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId('reg_confirm_yes').setLabel('Confirm').setStyle(ButtonStyle.Success), new ButtonBuilder().setCustomId('reg_confirm_no').setLabel('Cancel').setStyle(ButtonStyle.Secondary));
-	const preview = new EmbedBuilder().setTitle('Confirm alliance registration').setColor(0xfee75c).setDescription(`Register **${pick.name}** [${pick.abbr}] Â· K${pick.kid}` + (pick.members != null ? ` Â· ~${pick.members} members` : '') + '?').setFooter({
-		text: 'Codes redeem for all members Â· 60s to confirm'
+	const preview = new EmbedBuilder().setTitle('Confirm alliance registration').setColor(0xfee75c).setDescription(`Register **${pick.name}** [${pick.abbr}] | K${pick.kid}` + (pick.members != null ? ` | ~${pick.members} members` : '') + '?').setFooter({
+		text: 'Codes redeem for all members | 60s to confirm'
 	});
 	const msg = await interaction.editReply({
 		embeds: [preview],
@@ -142,7 +142,7 @@ async function confirmAlliance(interaction, pick, userId) {
 		});
 	} catch {
 		return interaction.editReply({
-			content: 'â° Timed out.',
+			content: ' Timed out.',
 			embeds: [],
 			components: []
 		});
@@ -176,7 +176,7 @@ async function handlePlayer(interaction) {
 	if (results.length === 1) return confirmPlayer(interaction, results[0], userId);
 	const menu = new StringSelectMenuBuilder().setCustomId(`reg_player:${userId}`).setPlaceholder('Select your player account').addOptions(results.slice(0, 25).map((p, i) => ({
 		label: String(p.name || p.fid).slice(0, 100),
-		description: `ID ${p.fid} Â· K${p.kid ?? '?'} Â· TC${p.tc ?? '?'}${p.alliance ? ` Â· ${p.alliance}` : ''}`.slice(0, 100),
+		description: `ID ${p.fid} | K${p.kid ?? '?'} | TC${p.tc ?? '?'}${p.alliance ? ` | ${p.alliance}` : ''}`.slice(0, 100),
 		value: String(i),
 	})));
 	const msg = await interaction.editReply({
@@ -191,13 +191,13 @@ async function handlePlayer(interaction) {
 		});
 		const pick = results[Number(sel.values[0])];
 		await sel.update({
-			content: 'Confirm belowâ€¦',
+			content: 'Confirm below...',
 			components: []
 		});
 		return confirmPlayer(interaction, pick, userId);
 	} catch {
 		return interaction.editReply({
-			content: 'â° Timed out.',
+			content: ' Timed out.',
 			components: []
 		});
 	}
@@ -232,7 +232,7 @@ async function handleAlliance(interaction) {
 	if (results.length === 1) return confirmAlliance(interaction, results[0], userId);
 	const menu = new StringSelectMenuBuilder().setCustomId(`reg_ally:${userId}`).setPlaceholder('Select the correct alliance').addOptions(results.slice(0, 25).map((a, i) => ({
 		label: `${a.name} [${a.abbr}]`.slice(0, 100),
-		description: `K${a.kid} Â· ${a.members ?? '?'} members Â· ${a.leader || 'â€”'}`.slice(0, 100),
+		description: `K${a.kid} | ${a.members ?? '?'} members | ${a.leader || ' - '}`.slice(0, 100),
 		value: String(i),
 	})));
 	const msg = await interaction.editReply({
@@ -247,13 +247,13 @@ async function handleAlliance(interaction) {
 		});
 		const pick = results[Number(sel.values[0])];
 		await sel.update({
-			content: 'Confirm belowâ€¦',
+			content: 'Confirm below...',
 			components: []
 		});
 		return confirmAlliance(interaction, pick, userId);
 	} catch {
 		return interaction.editReply({
-			content: 'â° Timed out.',
+			content: ' Timed out.',
 			components: []
 		});
 	}
@@ -264,10 +264,10 @@ module.exports = {
 		const sub = interaction.options.getSubcommand(false);
 		if (sub === 'player') return handlePlayer(interaction);
 		if (sub === 'alliance') return handleAlliance(interaction);
-		// Old command shape still cached by Discord â€” clear guidance
+		// Old command shape still cached by Discord - clear guidance
 		return interaction.reply({
 			embeds: [
-				errorEmbed('Update required', 'Please use the new commands:\n' + 'â€¢ `/register player` â†’ options: **uid**, **server** (optional)\n' + 'â€¢ `/register alliance` â†’ options: **server**, **name**\n\n' + 'If you still see the old form, wait a minute or ask the owner to re-register slash commands.'),
+				errorEmbed('Update required', 'Please use the new commands:\n' + '- `/register player` -> options: **uid**, **server** (optional)\n' + '- `/register alliance` -> options: **server**, **name**\n\n' + 'If you still see the old form, wait a minute or ask the owner to re-register slash commands.'),
 			],
 			ephemeral: true,
 		});

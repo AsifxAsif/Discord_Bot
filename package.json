@@ -1,7 +1,7 @@
 {
 	"name": "kingshot-bot",
 	"version": "2.1.0",
-	"description": "Kingshot Discord bot â€” gift code AUTOREDEEM, event reminders, interactive games",
+	"description": "Kingshot Discord bot - gift code AUTOREDEEM, event reminders, interactive games",
 	"main": "index.js",
 	"scripts": {
 		"start": "node start.js",

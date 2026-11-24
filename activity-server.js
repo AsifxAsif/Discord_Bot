@@ -40,57 +40,57 @@ const GAME_IDS = ['ttt', 'connect4', 'rps', 'reaction', 'trivia', 'guess', 'hang
 const GAME_INFO = {
 	ttt: {
 		name: 'Tic-Tac-Toe',
-		icon: 'â­•',
+		icon: '',
 		description: 'Connect three symbols in a row.',
 		mode: '2 players'
 	},
 	connect4: {
 		name: 'Connect Four',
-		icon: 'ðŸ”´',
+		icon: '',
 		description: 'Drop four discs into a row.',
 		mode: '2 players'
 	},
 	rps: {
 		name: 'Rock Paper Scissors',
-		icon: 'âœŠ',
+		icon: '',
 		description: 'Best of three rounds.',
 		mode: '2 players'
 	},
 	reaction: {
 		name: 'Reaction Duel',
-		icon: 'âš¡',
+		icon: '[!]',
 		description: 'Wait for GO, then tap first.',
 		mode: '2 players'
 	},
 	trivia: {
 		name: 'Kingshot Trivia',
-		icon: 'ðŸ§ ',
+		icon: '',
 		description: 'Five questions. Highest score wins.',
-		mode: '1â€“2 players'
+		mode: '1-2 players'
 	},
 	guess: {
 		name: 'Guess the Number',
-		icon: 'ðŸŽ¯',
+		icon: '',
 		description: 'Find the hidden number before your rival.',
-		mode: '1â€“2 players'
+		mode: '1-2 players'
 	},
 	hangman: {
 		name: 'Hangman',
-		icon: 'ðŸª',
+		icon: '',
 		description: 'Work together to reveal a Kingshot term.',
-		mode: '1â€“2 players'
+		mode: '1-2 players'
 	},
 	scramble: {
 		name: 'Word Scramble',
-		icon: 'ðŸ”¤',
+		icon: '',
 		description: 'Race to unscramble five Kingshot words.',
-		mode: '1â€“2 players'
+		mode: '1-2 players'
 	},
 	daily: {
 		name: 'Daily Challenge',
-		icon: 'ðŸ“…',
+		icon: '',
 		description: 'The same five-question challenge for everyone today.',
-		mode: '1â€“2 players'
+		mode: '1-2 players'
 	},
 };
 const EVENT_IDS = ['post', 'quick', 'list', 'delete', 'toggle'];

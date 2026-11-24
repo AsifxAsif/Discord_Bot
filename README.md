@@ -11,16 +11,16 @@ Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 - Automatic redeem loop for registered targets
 
 ### Event Reminders
-- `/eventreminder setup` â€” dropdowns + form: one-time, daily, every X days, weekly, monthly (UTC)
-- Events with 2 slots: Bear Trap 1/2, Swordland Legion 1/2, Viking Vengeance 1/2, Tri-Alliance Legion 1/2 (+ Arena, Castle Battle, KVK, Cesares, SG, Alliance Brawl, Custom â€” Custom asks for a name)
+- `/eventreminder setup` - dropdowns + form: one-time, daily, every X days, weekly, monthly (UTC)
+- Events with 2 slots: Bear Trap 1/2, Swordland Legion 1/2, Viking Vengeance 1/2, Tri-Alliance Legion 1/2 (+ Arena, Castle Battle, KVK, Cesares, SG, Alliance Brawl, Custom - Custom asks for a name)
 - The reminder is a plain message: `<event emoji> **Arena** @everyone` + **only the text you wrote** + small footer
-- Each reminder has its own emoji (default âš”ï¸); admins can change it with `/eventreminder edit`. No generated text
-- Multiple offsets (e.g. 60 + 10 min before). Footer: `PXD_BOT Â· Event: HH:MM UTC`
+- Each reminder has its own emoji (default ); admins can change it with `/eventreminder edit`. No generated text
+- Multiple offsets (e.g. 60 + 10 min before). Footer: `PXD_BOT | Event: HH:MM UTC`
 - **Auto-removal:** the 10-min reminder replaces the 60-min one; leftovers are deleted when the event starts
-- `/eventreminder list|edit|delete|toggle|test` â€” edit name, UTC time, offsets, emoji, and reminder text without recreating the schedule
+- `/eventreminder list|edit|delete|toggle|test` - edit name, UTC time, offsets, emoji, and reminder text without recreating the schedule
 
 ### Event Blogs
-- `/eventblog post` / `quick` â€” preview, pick channel + mention, then **Post now** or **Scheduleâ€¦**
+- `/eventblog post` / `quick` - preview, pick channel + mention, then **Post now** or **Schedule...**
 - Same schedule types as reminders; `/eventblog list|delete|toggle` to manage them
 
 ### Games
@@ -28,12 +28,12 @@ Gift-code AUTOREDEEM + Event reminders + Interactive / versus games.
 |---------|------|
 | `/games` | Opens the full Arcade lobby; choose any of the nine games inside the Activity |
 
-Trivia (all Kingshot: troops, resources, buildings, heroes, events, pets) and words live in `games/data.js` â€” edit freely.
+Trivia (all Kingshot: troops, resources, buildings, heroes, events, pets) and words live in `games/data.js` - edit freely.
 
 ## Setup
 
-1. Copy `.env.example` â†’ `.env` and fill values
-2. Enable **Message Content Intent** in Discord Developer Portal (Bot â†’ Privileged Gateway Intents)
+1. Copy `.env.example` -> `.env` and fill values
+2. Enable **Message Content Intent** in Discord Developer Portal (Bot -> Privileged Gateway Intents)
 3. Install & run:
 ```bash
 npm install
@@ -97,10 +97,10 @@ VITE_CLIENT_ID=your_discord_application_id
 
 1. Open your existing bot application at https://discord.com/developers/applications.
 2. Open **Activities** and configure URL Mappings.
-3. Under **OAuth2 â†’ General**, add `https://127.0.0.1` as a Redirect URI and save. The Embedded App SDK handles the in-Activity authorization return.
-4. Under **Activities â†’ URL Mappings**, map prefix `/` to the public HTTPS hostname serving this bot (hostname only; no `https://`).
-5. Under **Activities â†’ Settings**, enable Activities and save. Discord creates a default **Launch** Entry Point command.
-6. Enable **Developer Mode** in Discord User Settings â†’ Advanced while testing an unpublished Activity.
+3. Under **OAuth2 -> General**, add `https://127.0.0.1` as a Redirect URI and save. The Embedded App SDK handles the in-Activity authorization return.
+4. Under **Activities -> URL Mappings**, map prefix `/` to the public HTTPS hostname serving this bot (hostname only; no `https://`).
+5. Under **Activities -> Settings**, enable Activities and save. Discord creates a default **Launch** Entry Point command.
+6. Enable **Developer Mode** in Discord User Settings -> Advanced while testing an unpublished Activity.
 7. Launch the Kingshot Activity from the App Launcher in a voice channel. A second player must join that same Activity instance.
 
 The public hostname must serve this same Node process over HTTPS. Configure your hosting provider's HTTPS domain/proxy to forward to the app's `PORT`.
@@ -124,24 +124,24 @@ Do not expose `DISCORD_CLIENT_SECRET` in frontend variables or source files. Do 
 1. In the project root, create or update `.env` with `CLIENTID`, `DISCORD_CLIENT_SECRET`, and `VITE_CLIENT_ID`.
 2. In terminal 1, run the bot/API server:
 
-   ```powershell
-   npm install
-   npm start
-   ```
+ ```powershell
+ npm install
+ npm start
+ ```
 
 3. In terminal 2, run the Activity dev server:
 
-   ```powershell
-   cd activity
-   npm install
-   npm run dev
-   ```
+ ```powershell
+ cd activity
+ npm install
+ npm run dev
+ ```
 
 4. In terminal 3, expose the Activity dev server with a temporary HTTPS tunnel:
 
-   ```powershell
-   cloudflared tunnel --url http://localhost:5173
-   ```
+ ```powershell
+ cloudflared tunnel --url http://localhost:5173
+ ```
 
 5. Set the Discord Activity URL Mapping prefix `/` target to the tunnel hostname (hostname only, without `https://`). Vite reads `VITE_CLIENT_ID` from the project-root `.env` and proxies `/api` and `/ws` to the bot server on port 8080. If your bot uses another port, set `BOT_API_ORIGIN` before starting Vite, for example `$env:BOT_API_ORIGIN='http://127.0.0.1:9000'`.
 6. Launch the Activity from Discord's App Launcher / generated Launch Entry Point. Open the same Activity instance with a second Discord account to test the two-player game.
@@ -157,7 +157,7 @@ A normal browser tab can show the Vite page, but the Discord SDK authorization r
 - Rooms are in memory and are not persisted across bot restarts. This is appropriate for live game sessions; reminder persistence remains separate.
 - The single `/games` command launches the graphical Activity. The Activity can also be opened from Discord's App Launcher.
 
-## Kingshot Arcade Activity â€” all games
+## Kingshot Arcade Activity - all games
 
 The graphical Discord Activity now includes these nine games:
 
@@ -174,30 +174,30 @@ The graphical Discord Activity now includes these nine games:
 ### Launching the Activity in Discord
 
 1. In Discord Developer Portal, open the same application used by the bot.
-2. Under **Activities â†’ Settings**, enable Activities.
+2. Under **Activities -> Settings**, enable Activities.
 3. Add an Activity URL Mapping with prefix `/` pointing to the public HTTPS hostname serving this bot. The mapping target is the hostname only, without `https://`.
-4. Under **OAuth2 â†’ General**, add `https://127.0.0.1` as a redirect URI for local development if required by the Discord Activity setup.
+4. Under **OAuth2 -> General**, add `https://127.0.0.1` as a redirect URI for local development if required by the Discord Activity setup.
 5. Put `CLIENTID`, `DISCORDTOKEN`, `DISCORD_CLIENT_SECRET`, and `VITE_CLIENT_ID` in the root `.env`. `VITE_CLIENT_ID` is the same application Client ID as `CLIENTID`.
 6. Install and build from the project root:
 
-   ```bash
-   npm install
-   npm run build
-   ```
+ ```bash
+ npm install
+ npm run build
+ ```
 
 7. Register commands:
 
-   ```bash
-   npm run register
-   ```
+ ```bash
+ npm run register
+ ```
 
-   The registration script preserves the existing chat-input commands and updates Discord's single global Entry Point command to **Kingshot Arcade**.
+ The registration script preserves the existing chat-input commands and updates Discord's single global Entry Point command to **Kingshot Arcade**.
 
 8. Start the bot:
 
-   ```bash
-   npm start
-   ```
+ ```bash
+ npm start
+ ```
 
 9. In Discord, run `/games` to launch the graphical Activity from the slash command, or open the App Launcher and choose **Kingshot Arcade**. Invite another participant to the same Activity instance for 1v1 play.
 

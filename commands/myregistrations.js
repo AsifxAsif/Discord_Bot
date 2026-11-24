@@ -22,17 +22,17 @@ module.exports = {
 		const userId = interaction.user.id;
 		if (sub === 'list') {
 			const u = listUser(userId);
-			const players = (u.players || []).map((p) => `â€¢ **${p.name}** \`${p.fid}\` K${p.kid}`).join('\n') || '_None_';
-			const alliances = (u.alliances || []).map((a) => `â€¢ **${a.name}** [${a.abbr}] K${a.kid}`).join('\n') || '_None_';
+			const players = (u.players || []).map((p) => `- **${p.name}** \`${p.fid}\` K${p.kid}`).join('\n') || '_None_';
+			const alliances = (u.alliances || []).map((a) => `- **${a.name}** [${a.abbr}] K${a.kid}`).join('\n') || '_None_';
 			const embed = makeEmbed({
-				title: 'ðŸ“‹ Your registrations',
+				title: ' Your registrations',
 				color: 'info',
 				description: 'AUTOREDEEM runs for these accounts and all alliance members (refreshed each cycle).',
 				fields: [{
-					name: `ðŸ‘¤ Players Â· ${(u.players || []).length}/${MAX_PLAYERS}`,
+					name: ` Players | ${(u.players || []).length}/${MAX_PLAYERS}`,
 					value: players,
 				}, {
-					name: `ðŸ›¡ï¸ Alliances Â· ${(u.alliances || []).length}/${MAX_ALLIANCES}`,
+					name: ` Alliances | ${(u.alliances || []).length}/${MAX_ALLIANCES}`,
 					value: alliances,
 				}, ],
 				footer: 'Use the buttons below to remove an entry',
@@ -69,7 +69,7 @@ module.exports = {
 			const ok = removeAlliance(userId, server, tag);
 			return interaction.reply({
 				embeds: [
-					resultEmbed(ok ? 'Alliance removed' : 'Not found', `**${tag}** Â· K${server}`, ok),
+					resultEmbed(ok ? 'Alliance removed' : 'Not found', `**${tag}** | K${server}`, ok),
 				],
 				ephemeral: true,
 			});

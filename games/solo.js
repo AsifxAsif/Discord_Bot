@@ -33,12 +33,12 @@ function pickFresh(userId, kind, pool, count) {
 	return chosen;
 }
 const notYours = (i) => i.reply({
-	content: 'ðŸš« This is not your game.',
+	content: ' This is not your game.',
 	flags: EPH
 });
-const again = (key, label = 'ðŸ” Play again') => row(btn(`g:${key}:0:again`, label, ButtonStyle.Primary));
+const again = (key, label = ' Play again') => row(btn(`g:${key}:0:again`, label, ButtonStyle.Primary));
 /* =====================================================================
- * TRIVIA â€” 5 questions, multiple choice, timer, streak bonus
+ * TRIVIA - 5 questions, multiple choice, timer, streak bonus
  * ===================================================================== */
 const TRIVIA_ROUND = 5;
 const TRIVIA_TIME = 20000;
@@ -75,22 +75,22 @@ function triviaView(s) {
 	const lines = q.opts.map((o, i) => `**${LETTERS[i]}.** ${o}`).join('\n');
 	let status;
 	let color = 'info';
-	if (!a) status = `â³ Time left: <t:${ts(s.deadline)}:R>`;
+	if (!a) status = ` Time left: <t:${ts(s.deadline)}:R>`;
 	else if (a.ok) {
 		color = 'success';
-		status = `âœ… **Correct!** +${a.gain} pts${s.streak >= 2 ? ` Â· ðŸ”¥ ${s.streak} streak` : ''}`;
+		status = `[OK] **Correct!** +${a.gain} pts${s.streak >= 2 ? ` | ${s.streak} streak` : ''}`;
 	} else {
 		color = 'danger';
-		status = `${a.timeout ? "âŒ› **Time's up!**" : 'âŒ **Wrong!**'} Answer: **${q.opts[q.correct]}**`;
+		status = `${a.timeout ? "[X] **Time's up!**" : '[X] **Wrong!**'} Answer: **${q.opts[q.correct]}**`;
 	}
 	const buttons = q.opts.map((o, i) => btn(`g:trivia:${s.id}:ans:${i}`, LETTERS[i], a ? (i === q.correct ? ButtonStyle.Success : i === a.idx && !a.ok ? ButtonStyle.Danger : ButtonStyle.Secondary) : ButtonStyle.Primary, {
 		disabled: !!a
 	}));
-	buttons.push(a ? btn(`g:trivia:${s.id}:next`, s.i === s.qs.length - 1 ? 'ðŸ Results' : 'Next â–¶', ButtonStyle.Primary) : btn(`g:trivia:${s.id}:quit`, 'âœ–', ButtonStyle.Secondary));
+	buttons.push(a ? btn(`g:trivia:${s.id}:next`, s.i === s.qs.length - 1 ? 'Results' : 'Next', ButtonStyle.Primary) : btn(`g:trivia:${s.id}:quit`, '', ButtonStyle.Secondary));
 	return {
 		embeds: [
 			embed({
-				title: `ðŸ§  Kingshot Â· ${q.cat} Â· Question ${s.i + 1}/${s.qs.length}`,
+				title: ` Kingshot | ${q.cat} | Question ${s.i + 1}/${s.qs.length}`,
 				description: `**${q.q}**\n\n${lines}\n\n${status}`,
 				color,
 				fields: [{
@@ -99,7 +99,7 @@ function triviaView(s) {
 					inline: true
 				}, {
 					name: 'Streak',
-					value: `ðŸ”¥ ${s.streak}`,
+					value: ` ${s.streak}`,
 					inline: true
 				}, {
 					name: 'Progress',
@@ -116,12 +116,12 @@ function triviaFinish(s) {
 	core.endSession(s.id);
 	stats.record(s.userId, 'trivia', s.correct >= 3 ? 'win' : 'loss', s.score);
 	const total = s.qs.length;
-	const tier = s.correct === total ? 'ðŸ‘‘ Kingshot Legend' : s.correct >= 4 ? 'ðŸ¥‡ Veteran Governor' : s.correct >= 3 ? 'ðŸ¥ˆ Rising Lord' : s.correct >= 1 ? 'ðŸ¥‰ Recruit' : 'ðŸªµ Fresh Settler';
+	const tier = s.correct === total ? ' Kingshot Legend' : s.correct >= 4 ? ' Veteran Governor' : s.correct >= 3 ? ' Rising Lord' : s.correct >= 1 ? ' Recruit' : ' Fresh Settler';
 	return {
 		embeds: [
 			embed({
-				title: 'ðŸ Trivia complete',
-				description: `**${tier}**\n\nâœ… Correct: **${s.correct}/${total}**\nâ­ Points earned: **${s.score}**`,
+				title: ' Trivia complete',
+				description: `**${tier}**\n\n[OK] Correct: **${s.correct}/${total}**\n Points earned: **${s.score}**`,
 				color: s.correct >= 3 ? 'success' : 'warn',
 			}),
 		],
@@ -161,7 +161,7 @@ async function triviaAction(interaction, s, action, arg) {
 	}
 }
 /* =====================================================================
- * GUESS THE NUMBER â€” narrowing range, hint, hearts
+ * GUESS THE NUMBER - narrowing range, hint, hearts
  * ===================================================================== */
 function guessStart(interaction, update = false, max = 100) {
 	const maxTries = Math.ceil(Math.log2(max)) + 2;
@@ -186,26 +186,26 @@ function rangeBar(lo, hi, max, len = 24) {
 	for (let i = 0; i < len; i++) {
 		const a = 1 + Math.floor((i * max) / len);
 		const b = Math.max(a, Math.floor(((i + 1) * max) / len));
-		out += b >= lo && a <= hi ? 'â–ˆ' : 'â–‘';
+		out += b >= lo && a <= hi ? '#' : '.';
 	}
 	return out;
 }
 
 function guessView(s) {
 	const left = s.maxTries - s.tries;
-	let title = 'ðŸŽ¯ Guess the Number';
+	let title = ' Guess the Number';
 	let color = 'info';
-	let desc = `I'm thinking of a number between **1** and **${s.max}**.\n\n**Possible range:** ${s.lo} â€“ ${s.hi}\n\`${rangeBar(s.lo, s.hi, s.max)}\``;
+	let desc = `I'm thinking of a number between **1** and **${s.max}**.\n\n**Possible range:** ${s.lo} - ${s.hi}\n\`${rangeBar(s.lo, s.hi, s.max)}\``;
 	if (s.over === 'win') {
-		title = 'ðŸŽ‰ You got it!';
+		title = ' You got it!';
 		color = 'success';
-		desc = `The number was **${s.secret}** â€” found in **${s.tries}** ${s.tries === 1 ? 'try' : 'tries'}!`;
+		desc = `The number was **${s.secret}** - found in **${s.tries}** ${s.tries === 1 ? 'try' : 'tries'}!`;
 	} else if (s.over === 'lose') {
-		title = 'ðŸ’€ Out of tries';
+		title = ' Out of tries';
 		color = 'danger';
 		desc = `The number was **${s.secret}**. Better luck next time!`;
 	} else if (s.over === 'quit') {
-		title = 'ðŸ³ï¸ Gave up';
+		title = ' Gave up';
 		color = 'neutral';
 		desc = `The number was **${s.secret}**.`;
 	}
@@ -220,14 +220,14 @@ function guessView(s) {
 		inline: false
 	});
 	if (s.hint) fields.push({
-		name: 'ðŸ’¡ Hint',
+		name: 'Hint',
 		value: s.hint,
 		inline: false
 	});
-	const components = s.over ? [row(btn(`g:guess:0:again:${s.max}`, 'ðŸ” Play again', ButtonStyle.Primary))] : [
-		row(btn(`g:guess:${s.id}:ask`, 'ðŸŽ¯ Make a guess', ButtonStyle.Primary), btn(`g:guess:${s.id}:hint`, 'ðŸ’¡ Hint (âˆ’1 try)', ButtonStyle.Secondary, {
+	const components = s.over ? [row(btn(`g:guess:0:again:${s.max}`, ' Play again', ButtonStyle.Primary))] : [
+		row(btn(`g:guess:${s.id}:ask`, ' Make a guess', ButtonStyle.Primary), btn(`g:guess:${s.id}:hint`, ' Hint (-1 try)', ButtonStyle.Secondary, {
 			disabled: !!s.hint || left <= 1
-		}), btn(`g:guess:${s.id}:quit`, 'ðŸ³ï¸ Give up', ButtonStyle.Danger)),
+		}), btn(`g:guess:${s.id}:quit`, ' Give up', ButtonStyle.Danger)),
 	];
 	return {
 		embeds: [embed({
@@ -248,7 +248,7 @@ function guessFinish(s, result) {
 }
 async function guessAction(interaction, s, action) {
 	if (action === 'ask') {
-		return interaction.showModal(core.modal(`g:guess:${s.id}:modal`, `Guess 1â€“${s.max}`, 'n', `Your guess (1-${s.max})`, {
+		return interaction.showModal(core.modal(`g:guess:${s.id}:modal`, `Guess 1-${s.max}`, 'n', `Your guess (1-${s.max})`, {
 			placeholder: 'e.g. 42',
 			max: 5
 		}));
@@ -272,34 +272,34 @@ async function guessAction(interaction, s, action) {
 		}
 		s.tries++;
 		if (n === s.secret) {
-			s.log.push(`**${n}** âžœ ðŸŽ¯ Correct!`);
+			s.log.push(`**${n}** -> Correct!`);
 			guessFinish(s, 'win');
 			return interaction.update(guessView(s));
 		}
 		const diff = Math.abs(n - s.secret);
-		const close = diff <= Math.max(2, Math.round(s.max * 0.05)) ? ' Â· ðŸ”¥ very close!' : diff <= Math.round(s.max * 0.15) ? ' Â· ðŸŒ¶ï¸ warm' : '';
+		const close = diff <= Math.max(2, Math.round(s.max * 0.05)) ? ' | very close!' : diff <= Math.round(s.max * 0.15) ? ' | warm' : '';
 		if (n < s.secret) {
 			s.lo = Math.max(s.lo, n + 1);
-			s.log.push(`**${n}** âžœ â¬†ï¸ Higher${close}`);
+			s.log.push(`**${n}** -> Higher${close}`);
 		} else {
 			s.hi = Math.min(s.hi, n - 1);
-			s.log.push(`**${n}** âžœ â¬‡ï¸ Lower${close}`);
+			s.log.push(`**${n}** -> Lower${close}`);
 		}
 		if (s.tries >= s.maxTries) guessFinish(s, 'lose');
 		return interaction.update(guessView(s));
 	}
 }
 /* =====================================================================
- * HANGMAN â€” gallows art + Aâ€“M / Nâ€“Z letter menus
+ * HANGMAN - gallows art + A-M / N-Z letter menus
  * ===================================================================== */
 const GALLOWS = [
-	['  â”Œâ”€â”€â”€â”', '  â”‚', '  â”‚', '  â”‚', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚', '  â”‚', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚   â”‚', '  â”‚', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚  /â”‚', '  â”‚', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚  /â”‚\\', '  â”‚', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚  /â”‚\\', '  â”‚  /', '  â”‚', 'â”€â”€â”´â”€â”€'],
-	['  â”Œâ”€â”€â”€â”', '  â”‚   O', '  â”‚  /â”‚\\', '  â”‚  / \\', '  â”‚', 'â”€â”€â”´â”€â”€'],
+	[' +---+', ' |', ' |', ' |', ' |', '--+--'],
+	[' +---+', ' | O', ' |', ' |', ' |', '--+--'],
+	[' +---+', ' | O', ' | |', ' |', ' |', '--+--'],
+	[' +---+', ' | O', ' | /|', ' |', ' |', '--+--'],
+	[' +---+', ' | O', ' | /|\\', ' |', ' |', '--+--'],
+	[' +---+', ' | O', ' | /|\\', ' | /', ' |', '--+--'],
+	[' +---+', ' | O', ' | /|\\', ' | / \\', ' |', '--+--'],
 ].map((l) => l.join('\n'));
 const MAX_LIVES = 6;
 
@@ -317,9 +317,9 @@ function hangStart(interaction, update = false) {
 
 function letterMenu(s, group, n) {
 	const free = group.split('').filter((l) => !s.guessed.includes(l));
-	const m = new StringSelectMenuBuilder().setCustomId(`g:hang:${s.id}:pick${n}`).setPlaceholder(`Letters ${group[0]}â€“${group[group.length - 1]}`);
+	const m = new StringSelectMenuBuilder().setCustomId(`g:hang:${s.id}:pick${n}`).setPlaceholder(`Letters ${group[0]}-${group[group.length - 1]}`);
 	if (!free.length) m.setDisabled(true).addOptions({
-		label: 'â€”',
+		label: ' - ',
 		value: 'none'
 	});
 	else m.addOptions(free.map((l) => ({
@@ -332,30 +332,30 @@ function letterMenu(s, group, n) {
 function hangView(s) {
 	const wrong = s.guessed.filter((l) => !s.word.includes(l));
 	const display = s.word.split('').map((c) => (s.guessed.includes(c) || s.over ? c : '_')).join(' ');
-	let title = 'ðŸª Hangman';
+	let title = ' Hangman';
 	let color = 'info';
-	let status = `Kingshot term Â· **${s.word.length}** letters`;
+	let status = `Kingshot term | **${s.word.length}** letters`;
 	if (s.over === 'win') {
-		title = 'ðŸŽ‰ You saved him!';
+		title = ' You saved him!';
 		color = 'success';
 		status = `The word was **${s.word}**.`;
 	}
 	if (s.over === 'lose') {
-		title = 'ðŸ’€ Game over';
+		title = ' Game over';
 		color = 'danger';
 		status = `The word was **${s.word}**.`;
 	}
 	if (s.over === 'quit') {
-		title = 'ðŸ³ï¸ Gave up';
+		title = ' Gave up';
 		color = 'neutral';
 		status = `The word was **${s.word}**.`;
 	}
 	const components = s.over ? [again('hang')] : [
 		letterMenu(s, 'ABCDEFGHIJKLM', 1),
 		letterMenu(s, 'NOPQRSTUVWXYZ', 2),
-		row(btn(`g:hang:${s.id}:hint`, 'ðŸ’¡ Reveal a letter (âˆ’1 life)', ButtonStyle.Secondary, {
+		row(btn(`g:hang:${s.id}:hint`, ' Reveal a letter (-1 life)', ButtonStyle.Secondary, {
 			disabled: s.hintUsed || s.lives <= 1
-		}), btn(`g:hang:${s.id}:quit`, 'ðŸ³ï¸ Give up', ButtonStyle.Danger)),
+		}), btn(`g:hang:${s.id}:quit`, ' Give up', ButtonStyle.Danger)),
 	];
 	return {
 		embeds: [
@@ -369,7 +369,7 @@ function hangView(s) {
 					inline: true
 				}, {
 					name: 'Wrong letters',
-					value: wrong.length ? wrong.join(' ') : 'â€”',
+					value: wrong.length ? wrong.join(' ') : ' - ',
 					inline: true
 				}, ],
 			}),
@@ -415,7 +415,7 @@ async function hangAction(interaction, s, action) {
 	}
 }
 /* =====================================================================
- * SCRAMBLE â€” rounds, hints, speed-based points
+ * SCRAMBLE - rounds, hints, speed-based points
  * ===================================================================== */
 function scrambleWord(word) {
 	let s = word;
@@ -447,22 +447,22 @@ function scrambleStart(interaction, update = false) {
 
 function scrambleView(s) {
 	const spaced = s.mixed.split('').join(' ');
-	const hintLine = s.hints ? `\nðŸ’¡ \`${s.word.slice(0, s.hints).split('').join(' ')} ${'_ '.repeat(s.word.length - s.hints).trim()}\`` : '';
-	let status = `Attempts: **${s.attempts}** Â· Hints: **${s.hints}**`;
+	const hintLine = s.hints ? `\n \`${s.word.slice(0, s.hints).split('').join(' ')} ${'_ '.repeat(s.word.length - s.hints).trim()}\`` : '';
+	let status = `Attempts: **${s.attempts}** | Hints: **${s.hints}**`;
 	let color = 'info';
 	if (s.result) {
 		color = s.result.ok ? 'success' : 'neutral';
-		status = s.result.ok ? `âœ… **${s.word}** â€” +${s.result.gain} pts` : `â­ï¸ It was **${s.word}**`;
+		status = s.result.ok ? `[OK] **${s.word}** - +${s.result.gain} pts` : ` It was **${s.word}**`;
 	}
-	const components = s.result ? [row(btn(`g:scr:${s.id}:next`, 'Next word â–¶', ButtonStyle.Primary), btn(`g:scr:${s.id}:finish`, 'ðŸ Finish', ButtonStyle.Secondary))] : [
-		row(btn(`g:scr:${s.id}:ask`, 'âœï¸ Answer', ButtonStyle.Primary), btn(`g:scr:${s.id}:hint`, 'ðŸ’¡ Hint', ButtonStyle.Secondary, {
+	const components = s.result ? [row(btn(`g:scr:${s.id}:next`, 'Next word >', ButtonStyle.Primary), btn(`g:scr:${s.id}:finish`, ' Finish', ButtonStyle.Secondary))] : [
+		row(btn(`g:scr:${s.id}:ask`, 'Answer', ButtonStyle.Primary), btn(`g:scr:${s.id}:hint`, 'Hint', ButtonStyle.Secondary, {
 			disabled: s.hints >= Math.min(3, s.word.length - 2)
-		}), btn(`g:scr:${s.id}:skip`, 'â­ï¸ Skip', ButtonStyle.Secondary), btn(`g:scr:${s.id}:finish`, 'ðŸ Finish', ButtonStyle.Danger)),
+		}), btn(`g:scr:${s.id}:skip`, ' Skip', ButtonStyle.Secondary), btn(`g:scr:${s.id}:finish`, ' Finish', ButtonStyle.Danger)),
 	];
 	return {
 		embeds: [
 			embed({
-				title: `ðŸ”¤ Word Scramble Â· Round ${s.round}`,
+				title: ` Word Scramble | Round ${s.round}`,
 				description: `Unscramble this word:\n# \`${spaced}\`${hintLine}\n${s.word.length} letters\n\n${status}`,
 				color,
 				fields: [{
@@ -485,8 +485,8 @@ function scrambleFinish(s) {
 	stats.record(s.userId, 'scramble', s.solved > 0 ? 'win' : 'loss', s.score);
 	return {
 		embeds: [embed({
-			title: 'ðŸ Scramble finished',
-			description: `Words solved: **${s.solved}**\nâ­ Points earned: **${s.score}**`,
+			title: ' Scramble finished',
+			description: `Words solved: **${s.solved}**\n Points earned: **${s.score}**`,
 			color: s.solved ? 'success' : 'warn'
 		})],
 		components: [again('scr')],
@@ -533,7 +533,7 @@ async function scrambleAction(interaction, s, action) {
 	}
 }
 /* =====================================================================
- * DAILY â€” same number for everyone each UTC day, 7 tries, persistent streak
+ * DAILY - same number for everyone each UTC day, 7 tries, persistent streak
  * ===================================================================== */
 const DAILY_MAX = 100;
 const DAILY_TRIES = 7;
@@ -544,11 +544,11 @@ const nextResetTs = () => {
 };
 
 function temperature(diff) {
-	if (diff <= 2) return 'ðŸ”¥ Burning';
-	if (diff <= 5) return 'ðŸŒ¶ï¸ Hot';
-	if (diff <= 10) return 'ðŸ˜Š Warm';
-	if (diff <= 20) return 'â„ï¸ Cold';
-	return 'ðŸ§Š Freezing';
+	if (diff <= 2) return ' Burning';
+	if (diff <= 5) return ' Hot';
+	if (diff <= 10) return 'Warm';
+	if (diff <= 20) return ' Cold';
+	return ' Freezing';
 }
 
 function dailyDoneView(userId) {
@@ -557,8 +557,8 @@ function dailyDoneView(userId) {
 	return {
 		embeds: [
 			embed({
-				title: 'ðŸ“… Daily Challenge â€” done!',
-				description: (r?.solved ? `âœ… You solved today's number in **${r.tries}** ${r.tries === 1 ? 'try' : 'tries'}!` : 'âŒ You didn\'t crack today\'s number.') + `\n\nðŸ”¥ Streak: **${d.streak}** Â· ðŸ† Best: **${d.best}**\nâ³ New challenge <t:${nextResetTs()}:R>`,
+				title: ' Daily Challenge - done!',
+				description: (r?.solved ? `[OK] You solved today's number in **${r.tries}** ${r.tries === 1 ? 'try' : 'tries'}!` : '[X] You didn\'t crack today\'s number.') + `\n\n Streak: **${d.streak}** | Best: **${d.best}**\n New challenge <t:${nextResetTs()}:R>`,
 				color: r?.solved ? 'success' : 'neutral',
 			}),
 		],
@@ -590,22 +590,22 @@ function dailyStart(interaction) {
 function dailyView(s) {
 	const left = DAILY_TRIES - s.guesses.length;
 	const log = s.guesses.map((n) => {
-		if (n === s.secret) return `**${n}** âžœ ðŸŽ¯ Correct!`;
-		return `**${n}** âžœ ${n < s.secret ? 'â¬†ï¸ Higher' : 'â¬‡ï¸ Lower'} Â· ${temperature(Math.abs(n - s.secret))}`;
+		if (n === s.secret) return `**${n}** -> Correct!`;
+		return `**${n}** -> ${n < s.secret ? ' Higher' : ' Lower'} | ${temperature(Math.abs(n - s.secret))}`;
 	});
 	const d = stats.getDaily(s.userId);
-	let title = 'ðŸ“… Daily Challenge';
+	let title = ' Daily Challenge';
 	let color = 'info';
-	let desc = `Everyone gets the **same number** today (1â€“${DAILY_MAX}). **${DAILY_TRIES} tries.**\nðŸ”¥ Streak: **${d.streak}**\nâ³ Resets <t:${nextResetTs()}:R>`;
+	let desc = `Everyone gets the **same number** today (1-${DAILY_MAX}). **${DAILY_TRIES} tries.**\n Streak: **${d.streak}**\n Resets <t:${nextResetTs()}:R>`;
 	if (s.over === 'win') {
-		title = 'ðŸŽ‰ Daily solved!';
+		title = ' Daily solved!';
 		color = 'success';
-		desc = `Solved in **${s.guesses.length}** ${s.guesses.length === 1 ? 'try' : 'tries'}!\nðŸ”¥ Streak: **${d.streak}** Â· â­ +${s.points} pts\nâ³ New challenge <t:${nextResetTs()}:R>`;
+		desc = `Solved in **${s.guesses.length}** ${s.guesses.length === 1 ? 'try' : 'tries'}!\n Streak: **${d.streak}** | +${s.points} pts\n New challenge <t:${nextResetTs()}:R>`;
 	}
 	if (s.over === 'lose') {
-		title = 'ðŸ’€ Daily failed';
+		title = ' Daily failed';
 		color = 'danger';
-		desc = `The number was **${s.secret}**.\nâ³ New challenge <t:${nextResetTs()}:R>`;
+		desc = `The number was **${s.secret}**.\n New challenge <t:${nextResetTs()}:R>`;
 	}
 	const fields = [{
 		name: 'Tries left',
@@ -624,7 +624,7 @@ function dailyView(s) {
 			color,
 			fields
 		})],
-		components: s.over ? [] : [row(btn(`g:daily:${s.id}:ask`, 'ðŸŽ¯ Make a guess', ButtonStyle.Primary))],
+		components: s.over ? [] : [row(btn(`g:daily:${s.id}:ask`, ' Make a guess', ButtonStyle.Primary))],
 	};
 }
 async function dailyAction(interaction, s, action) {
@@ -683,7 +683,7 @@ const ACTIONS = {
 	daily: dailyAction
 };
 const KEYS = new Set(Object.keys(ACTIONS));
-/** /games <sub> â†’ key */
+/** /games <sub> -> key */
 const SUB_TO_KEY = {
 	trivia: 'trivia',
 	guess: 'guess',

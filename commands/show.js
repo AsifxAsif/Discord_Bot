@@ -24,16 +24,16 @@ function memberLines(members, startIndex) {
 	if (!members.length) return 'No members were returned for this alliance.';
 	return members.map((m, i) => {
 		const n = startIndex + i + 1;
-		return `${n}. **${m.name || m.fid}** â€” \`${m.fid}\` Â· K${m.kid ?? '?'}${
-        m.tc != null ? ` Â· TC${m.tc}` : ''
-      }`;
+		return `${n}. **${m.name || m.fid}** - \`${m.fid}\` | K${m.kid ?? '?'}${
+ m.tc != null ? ` | TC${m.tc}` : ''
+ }`;
 	}).join('\n');
 }
 
 function statsEmbed(alliance, members) {
 	const knownTc = members.filter((m) => m.tc != null);
-	const averageTc = knownTc.length ? (knownTc.reduce((sum, m) => sum + Number(m.tc), 0) / knownTc.length).toFixed(1) : 'â€”';
-	return new EmbedBuilder().setTitle(`ðŸ“Š ${alliance.name || alliance.slug} â€” summary`).setColor(0x57f287).addFields({
+	const averageTc = knownTc.length ? (knownTc.reduce((sum, m) => sum + Number(m.tc), 0) / knownTc.length).toFixed(1) : ' - ';
+	return new EmbedBuilder().setTitle(` ${alliance.name || alliance.slug} - summary`).setColor(0x57f287).addFields({
 		name: 'Total members',
 		value: String(members.length),
 		inline: true
@@ -51,7 +51,7 @@ function statsEmbed(alliance, members) {
 		inline: true
 	}, {
 		name: 'Alliance tag',
-		value: alliance.abbr || alliance.slug || 'â€”',
+		value: alliance.abbr || alliance.slug || ' - ',
 		inline: true
 	}).setFooter({
 		text: 'Summary shown after the full member list'
@@ -71,10 +71,10 @@ function buildRosterMessage(alliance, members, page, pageSize) {
 		const chunk = pageMembers.slice(offset, offset + MEMBERS_PER_EMBED);
 		const abs = start + offset;
 		const isFirstOverall = abs === 0;
-		embeds.push(new EmbedBuilder().setTitle(isFirstOverall ? `ðŸ‘¥ ${alliance.name || alliance.slug} [${alliance.abbr || alliance.slug}]` : `ðŸ‘¥ ${alliance.name || alliance.slug} (continued)`).setDescription(memberLines(chunk, abs)).setColor(0x5865f2).setFooter({
-			text: `Members ${abs + 1}â€“${abs + chunk.length} of ${members.length} Â· Page ${
-            pageIndex + 1
-          }/${totalPages}`,
+		embeds.push(new EmbedBuilder().setTitle(isFirstOverall ? ` ${alliance.name || alliance.slug} [${alliance.abbr || alliance.slug}]` : ` ${alliance.name || alliance.slug} (continued)`).setDescription(memberLines(chunk, abs)).setColor(0x5865f2).setFooter({
+			text: `Members ${abs + 1}-${abs + chunk.length} of ${members.length} | Page ${
+ pageIndex + 1
+ }/${totalPages}`,
 		}));
 	}
 	// Stats ONLY after all members on the last page
@@ -83,7 +83,7 @@ function buildRosterMessage(alliance, members, page, pageSize) {
 		embeds.push(statsEmbed(alliance, members));
 	}
 	if (!embeds.length) {
-		embeds.push(new EmbedBuilder().setTitle(`ðŸ‘¥ ${alliance.name || alliance.slug}`).setDescription('No members found.').setColor(0x5865f2));
+		embeds.push(new EmbedBuilder().setTitle(` ${alliance.name || alliance.slug}`).setDescription('No members found.').setColor(0x5865f2));
 	}
 	return {
 		embeds,
@@ -100,7 +100,7 @@ function pageButtons(userId, page, totalPages) {
 }
 async function displayRoster(interaction, userId, alliance, members) {
 	const safe = (members || []).slice(0, MAX_MEMBERS);
-	// One page of up to 50 list lines â†’ fewer split messages; stats only on last page
+	// One page of up to 50 list lines -> fewer split messages; stats only on last page
 	const pageSize = 50;
 	let page = 0;
 	let view = buildRosterMessage(alliance, safe, page, pageSize);
@@ -142,7 +142,7 @@ async function loadAndDisplayRoster(interaction, userId, selected) {
 		return interaction.editReply({
 			content: null,
 			embeds: [
-				errorEmbed('Could not load alliance roster', `Alliance: **${selected.name || selected.slug}** Â· K${selected.kid}\n${error.message}`),
+				errorEmbed('Could not load alliance roster', `Alliance: **${selected.name || selected.slug}** | K${selected.kid}\n${error.message}`),
 			],
 			components: [],
 		});
@@ -157,7 +157,7 @@ module.exports = {
 		if (!alliances.length) {
 			return interaction.reply({
 				embeds: [
-					errorEmbed('No alliances registered', 'Use `/register alliance server:â€¦ name:â€¦` first.'),
+					errorEmbed('No alliances registered', 'Use `/register alliance server:... name:...` first.'),
 				],
 				ephemeral: true,
 			});
@@ -191,7 +191,7 @@ module.exports = {
 			});
 			const selected = alliances[Number(sel.values[0])];
 			await sel.update({
-				content: 'Loading rosterâ€¦',
+				content: 'Loading roster...',
 				embeds: [],
 				components: []
 			});

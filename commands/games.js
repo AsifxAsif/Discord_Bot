@@ -43,13 +43,13 @@ async function showStats(interaction) {
 	const user = interaction.options.getUser('user') || interaction.user;
 	const st = stats.getStats(user.id);
 	const rate = st.played ? Math.round((st.wins / st.played) * 100) : 0;
-	const per = Object.entries(st.games || {}).map(([k, g]) => `â€¢ **${k}** â€” ${g.wins}/${g.played} wins`).join('\n') || '_No games played yet_';
+	const per = Object.entries(st.games || {}).map(([k, g]) => `- **${k}** - ${g.wins}/${g.played} wins`).join('\n') || '_No games played yet_';
 	return interaction.reply({
 		embeds: [embed({
-			title: `ðŸŽ® Game stats â€” ${user.username}`,
+			title: ` Game stats - ${user.username}`,
 			color: 'info',
 			fields: [{
-				name: 'ðŸ† Points',
+				name: ' Points',
 				value: `**${st.points}**`,
 				inline: true
 			}, {
@@ -65,11 +65,11 @@ async function showStats(interaction) {
 				value: `${st.wins} / ${st.losses} / ${st.draws}`,
 				inline: true
 			}, {
-				name: 'ðŸ… Win streak',
+				name: ' Win streak',
 				value: `${st.streak} (best ${st.bestStreak})`,
 				inline: true
 			}, {
-				name: 'ðŸ“… Daily streak',
+				name: ' Daily streak',
 				value: `${st.daily?.streak || 0} (best ${st.daily?.best || 0})`,
 				inline: true
 			}, {
@@ -82,15 +82,15 @@ async function showStats(interaction) {
 }
 async function showLeaderboard(interaction) {
 	const top = stats.leaderboard(10);
-	const medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
+	const medals = ['', '', ''];
 	const lines = top.map(
-		(u, i) => `${medals[i] || `**${i + 1}.**`} <@${u.id}> â€” **${u.points}** pts Â· ${u.wins}W ${u.losses}L ${u.draws}D`);
+		(u, i) => `${medals[i] || `**${i + 1}.**`} <@${u.id}> - **${u.points}** pts | ${u.wins}W ${u.losses}L ${u.draws}D`);
 	return interaction.reply({
 		embeds: [embed({
-			title: 'ðŸ† Games leaderboard',
-			description: lines.join('\n') || '_No games played yet â€” be the first!_',
+			title: ' Games leaderboard',
+			description: lines.join('\n') || '_No games played yet - be the first!_',
 			color: 'gold',
-			footer: 'Win = 5 pts Â· Draw = 2 Â· Loss = 1 Â· solo games score by performance',
+			footer: 'Win = 5 pts | Draw = 2 | Loss = 1 | solo games score by performance',
 		})],
 		allowedMentions: {
 			parse: []
@@ -109,7 +109,7 @@ async function handleInvite(interaction) {
 	if (action === 'create') {
 		// Open modal to create invite
 		const modal = new ModalBuilder().setCustomId(`invite_modal:${userId}`).setTitle('Create Game Invite');
-		modal.addComponents(new TextInputBuilder().setCustomId('invite_game').setLabel('Game (ttt, connect4, rps, reaction, trivia, guess, hangman, scramble, daily)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('ttt'), new TextInputBuilder().setCustomId('invite_channel').setLabel('Channel ID (optional â€” leave blank for current channel)').setStyle(TextInputStyle.Short).setRequired(false), new TextInputBuilder().setCustomId('invite_message').setLabel('Custom invite message (optional)').setStyle(TextInputStyle.Paragraph).setRequired(false).setPlaceholder('Come challenge me in Kingshot Arcade!'), );
+		modal.addComponents(new TextInputBuilder().setCustomId('invite_game').setLabel('Game (ttt, connect4, rps, reaction, trivia, guess, hangman, scramble, daily)').setStyle(TextInputStyle.Short).setRequired(true).setPlaceholder('ttt'), new TextInputBuilder().setCustomId('invite_channel').setLabel('Channel ID (optional - leave blank for current channel)').setStyle(TextInputStyle.Short).setRequired(false), new TextInputBuilder().setCustomId('invite_message').setLabel('Custom invite message (optional)').setStyle(TextInputStyle.Paragraph).setRequired(false).setPlaceholder('Come challenge me in Kingshot Arcade!'), );
 		await interaction.showModal(modal);
 		return true;
 	}
@@ -123,7 +123,7 @@ async function handleInvite(interaction) {
 		};
 		const game = get('invite_game').trim().toLowerCase();
 		const channelId = get('invite_channel').trim() || interaction.channelId;
-		const message = get('invite_message').trim() || `ðŸŽ® **${game.toUpperCase()}** invite! Come challenge me in Kingshot Arcade!`;
+		const message = get('invite_message').trim() || ` **${game.toUpperCase()}** invite! Come challenge me in Kingshot Arcade!`;
 		const invId = `inv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 		activeInvites.set(invId, {
 			game,
@@ -136,7 +136,7 @@ async function handleInvite(interaction) {
 		try {
 			const ch = await interaction.client.channels.fetch(channelId);
 			if (ch?.isTextBased()) {
-				const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`invite:accept:${invId}`).setLabel('ðŸŽ® Accept Invite').setStyle(ButtonStyle.Success), new ButtonBuilder().setCustomId(`invite:decline:${invId}`).setLabel('Decline').setStyle(ButtonStyle.Secondary));
+				const row = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`invite:accept:${invId}`).setLabel(' Accept Invite').setStyle(ButtonStyle.Success), new ButtonBuilder().setCustomId(`invite:decline:${invId}`).setLabel('Decline').setStyle(ButtonStyle.Secondary));
 				await ch.send({
 					content: message,
 					components: [row]
@@ -146,7 +146,7 @@ async function handleInvite(interaction) {
 			console.error('Invite send failed:', e.message);
 		}
 		await interaction.reply({
-			content: `âœ… Invite sent to <#${channelId}>! Code: \`${invId}\``,
+			content: `[OK] Invite sent to <#${channelId}>! Code: \`${invId}\``,
 			ephemeral: true
 		});
 		return true;
@@ -155,21 +155,21 @@ async function handleInvite(interaction) {
 		const inv = activeInvites.get(invId);
 		if (!inv) {
 			await interaction.reply({
-				content: 'âš ï¸ This invite has expired.',
+				content: '[!] This invite has expired.',
 				ephemeral: true
 			});
 			return true;
 		}
 		if (interaction.user.id === inv.creator) {
 			await interaction.reply({
-				content: 'âš ï¸ You cannot accept your own invite.',
+				content: '[!] You cannot accept your own invite.',
 				ephemeral: true
 			});
 			return true;
 		}
 		// Launch activity with game pre-selected
 		await interaction.reply({
-			content: `ðŸŽ® Accepting invite â€” launching **${inv.game}**! Opening Kingshot Arcadeâ€¦`,
+			content: ` Accepting invite - launching **${inv.game}**! Opening Kingshot Arcade...`,
 			ephemeral: false
 		});
 		// Try to launch the activity
@@ -184,14 +184,14 @@ async function handleInvite(interaction) {
 	if (action === 'decline') {
 		activeInvites.delete(invId);
 		await interaction.reply({
-			content: 'âŒ Invite declined.',
+			content: '[X] Invite declined.',
 			ephemeral: true
 		});
 		return true;
 	}
 	return false;
 }
-/* Game activity tracker â€” shows who is playing what */
+/* Game activity tracker - shows who is playing what */
 const playerGames = new Map(); // userId -> { game, instanceId, username }
 function getActivePlayers() {
 	const list = [];
