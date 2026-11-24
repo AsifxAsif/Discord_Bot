@@ -695,7 +695,6 @@ function render() {
 
 function renderMenu() {
 	const players = state?.players || [];
-	const activeGames = getActivePlayers();
 	shell(`
         <section class="intro">
             <div class="eyebrow">PXD ALLIANCE · THE ROYAL GAME HALL</div>
