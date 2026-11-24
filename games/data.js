@@ -311,8 +311,7 @@ const PETS = [{
 	w: ['Taming Marks', 'Forgehammers', 'Widgets']
 }, {
 	q: 'What do Taming Marks do?',
-	a: 'Refine a pet'
-	s secondary stats ',
+	a: "Refine a pet secondary stats",
 	w: ['Level up pets', 'Train troops', 'Unlock heroes']
 }, {
 	q: 'How many secondary stats does pet refinement affect?',
