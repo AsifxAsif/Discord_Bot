@@ -4,7 +4,7 @@ import {
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 export async function connectDiscord() {
 	if (!CLIENT_ID) {
-		throw new Error('VITE_CLIENT_ID is missing. Set it in the hosting environment or activity/.env.local.');
+		throw new Error('VITE_CLIENT_ID is missing. Set it in the hosting environment or project-root .env.');
 	}
 	const discordSdk = new DiscordSDK(CLIENT_ID);
 	await discordSdk.ready();
@@ -15,7 +15,8 @@ export async function connectDiscord() {
 		response_type: 'code',
 		state: '',
 		prompt: 'none',
-		scope: ['identify', 'applications.commands'],
+		// guilds is required for server-side admin checks.
+		scope: ['identify', 'guilds', 'applications.commands'],
 	});
 	const response = await fetch('/api/activity/token', {
 		method: 'POST',
@@ -33,8 +34,12 @@ export async function connectDiscord() {
 	const auth = await discordSdk.commands.authenticate({
 		access_token: token.access_token,
 	});
-	if (!auth?.user?.id) throw new Error('Discord did not return your user identity.');
-	if (!discordSdk.instanceId) throw new Error('Discord did not provide an Activity instance ID. Close and relaunch the Activity.');
+	if (!auth?.user?.id) {
+		throw new Error('Discord did not return your user identity.');
+	}
+	if (!discordSdk.instanceId) {
+		throw new Error('Discord did not provide an Activity instance ID. Close and relaunch the Activity.');
+	}
 	return {
 		sdk: discordSdk,
 		user: auth.user,

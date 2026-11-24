@@ -46,7 +46,6 @@ function canManage(interaction) {
 	if (isAdmin(interaction)) return true;
 	return interaction.memberPermissions?.has(PermissionFlagsBits.Administrator) || false;
 }
-// userId -> draft
 const drafts = new Map();
 
 function input(id, label, {
@@ -60,7 +59,7 @@ function input(id, label, {
 	if (max) t.setMaxLength(max);
 	return new ActionRowBuilder().addComponents(t);
 }
-/** The ephemeral "draft" panel: live preview + channel / mention / post-now / schedule controls. */
+
 function panel(userId, d) {
 	const info = makeEmbed({
 		title: '📝 Announcement draft',
@@ -80,11 +79,11 @@ function panel(userId, d) {
 	const buttons = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`eb_mention:${userId}`).setLabel(d.mention === '@everyone' ? '@everyone: ON' : '@everyone: OFF').setStyle(d.mention === '@everyone' ? ButtonStyle.Danger : ButtonStyle.Secondary), new ButtonBuilder().setCustomId(`eb_now:${userId}`).setLabel('Post now').setStyle(ButtonStyle.Success).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`eb_sched:${userId}`).setLabel('Schedule…').setStyle(ButtonStyle.Primary).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`eb_cancel:${userId}`).setLabel('Cancel').setStyle(ButtonStyle.Secondary));
 	return {
 		embeds: [info, blogEmbed(d)],
-		components: [new ActionRowBuilder().addComponents(channelMenu), buttons],
+		components: [new ActionRowBuilder().addComponents(channelMenu), buttons]
 	};
 }
 module.exports = {
-	data: new SlashCommandBuilder().setName('eventblog').setDescription('Post or schedule event announcements (Admin only)').setDefaultMemberPermissions(PermissionFlagsBits.Administrator).addSubcommand((s) => s.setName('post').setDescription('Write an announcement (post now or schedule)')).addSubcommand((s) => s.setName('quick').setDescription('Quick LIVE announcement (post now or schedule)').addStringOption((o) => o.setName('event').setDescription('Event').setRequired(true).addChoices(...PRESET_EVENTS.filter((e) => e !== 'Custom').slice(0, 24).map((e) => ({
+	data: new SlashCommandBuilder().setName('eventblog').setDescription('Post or schedule event announcements (Admin only)').setDefaultMemberPermissions(PermissionFlagsBits.Administrator).addSubcommand((s) => s.setName('post').setDescription('Write an announcement (post now or schedule)')).addSubcommand((s) => s.setName('quick').setDescription('Quick LIVE announcement').addStringOption((o) => o.setName('event').setDescription('Event').setRequired(true).addChoices(...PRESET_EVENTS.filter((e) => e !== 'Custom').slice(0, 24).map((e) => ({
 		name: e,
 		value: e
 	}))))).addSubcommand((s) => s.setName('list').setDescription('List scheduled announcements')).addSubcommand((s) => s.setName('delete').setDescription('Delete a scheduled announcement').addStringOption((o) => o.setName('id').setDescription('Announcement ID').setRequired(true))).addSubcommand((s) => s.setName('toggle').setDescription('Enable or disable a scheduled announcement').addStringOption((o) => o.setName('id').setDescription('Announcement ID').setRequired(true)).addBooleanOption((o) => o.setName('enabled').setDescription('Enable?').setRequired(true))),
@@ -126,7 +125,7 @@ module.exports = {
 				image: '',
 				color: 0xed4245,
 				mention: '@everyone',
-				channelId: null,
+				channelId: null
 			};
 			drafts.set(userId, d);
 			return interaction.reply({
@@ -139,25 +138,25 @@ module.exports = {
 			if (!list.length) {
 				return interaction.reply({
 					embeds: [makeEmbed({
-						title: '📢 Scheduled announcements',
+						title: '📋 Scheduled announcements',
 						description: '_None yet. Use `/eventblog post` → Schedule._',
 						color: 'info'
 					})],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 			const lines = list.map((b) => {
 				const next = b.enabled ? getNextOccurrence(b) : null;
 				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : '—';
-				return `${b.enabled ? '🟢' : '🔴'} **${b.title}** \`${b.id}\`\n${b.event} · ${formatSchedule(b)} → <#${b.channelId}> · Next ${nextStr}`;
+				return `${b.enabled ? '✅' : '❌'} **${b.title}** \`${b.id}\`\n${b.event} · ${formatSchedule(b)} → <#${b.channelId}> · Next ${nextStr}`;
 			});
 			return interaction.reply({
 				embeds: [makeEmbed({
-					title: `📢 Scheduled announcements (${list.length})`,
+					title: `📋 Scheduled announcements (${list.length})`,
 					description: lines.join('\n\n').slice(0, 4000),
 					color: 'info'
 				})],
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 		if (sub === 'delete') {
@@ -176,7 +175,7 @@ module.exports = {
 			const ok = b && b.guildId === guildId ? setBlogEnabled(id, enabled) : false;
 			return interaction.reply({
 				embeds: [resultEmbed(ok ? (enabled ? 'Enabled' : 'Disabled') : 'Not found', `\`${id}\``, !!ok)],
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 	},
@@ -200,7 +199,6 @@ async function handleEventBlogUI(interaction) {
 		}).catch(() => {});
 		return true;
 	}
-	/* Form submitted → draft panel */
 	if (id.startsWith('eb_modal:')) {
 		const get = fieldGetter(interaction);
 		const d = {
@@ -210,7 +208,7 @@ async function handleEventBlogUI(interaction) {
 			image: get('image').trim(),
 			color: 0x5865f2,
 			mention: '@everyone',
-			channelId: null,
+			channelId: null
 		};
 		drafts.set(userId, d);
 		await interaction.reply({
@@ -272,7 +270,6 @@ async function handleEventBlogUI(interaction) {
 		}
 		return true;
 	}
-	/* Schedule → pick type */
 	if (id.startsWith('eb_sched:') || id.startsWith('eb_back:')) {
 		if (id.startsWith('eb_back:')) {
 			await interaction.update(panel(userId, d));
@@ -300,17 +297,12 @@ async function handleEventBlogUI(interaction) {
 			description: 'Day of month'
 		});
 		await interaction.update({
-			embeds: [
-				makeEmbed({
-					title: '🗓️ Schedule announcement',
-					description: `**${d.title}** → <#${d.channelId}>\n\nChoose when it should be posted (UTC).`,
-					color: 'info',
-				}),
-			],
-			components: [
-				new ActionRowBuilder().addComponents(typeMenu),
-				new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`eb_back:${userId}`).setLabel('← Back').setStyle(ButtonStyle.Secondary)),
-			],
+			embeds: [makeEmbed({
+				title: '📅 Schedule announcement',
+				description: `**${d.title}** → <#${d.channelId}>\n\nChoose when it should be posted (UTC).`,
+				color: 'info'
+			})],
+			components: [new ActionRowBuilder().addComponents(typeMenu), new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`eb_back:${userId}`).setLabel('← Back').setStyle(ButtonStyle.Secondary))],
 		});
 		return true;
 	}
@@ -358,14 +350,14 @@ async function handleEventBlogUI(interaction) {
 		} : null;
 		if (!err && d.stype === 'once' && !getNextOccurrence(schedule)) {
 			await interaction.reply({
-				content: '❌ That date/time is already in the past.',
+				content: '⚠️ That date/time is already in the past.',
 				ephemeral: true
 			});
 			return true;
 		}
 		if (err) {
 			await interaction.reply({
-				content: `❌ ${err}`,
+				content: `⚠️ ${err}`,
 				ephemeral: true
 			});
 			return true;
@@ -380,20 +372,13 @@ async function handleEventBlogUI(interaction) {
 			mention: d.mention,
 			channelId: d.channelId,
 			createdBy: userId,
-			...schedule,
+			...schedule
 		});
 		drafts.delete(userId);
 		const next = getNextOccurrence(blog);
-		const payload = {
-			embeds: [
-				resultEmbed('Announcement scheduled', `**${blog.title}**\n${formatSchedule(blog)} → <#${blog.channelId}>\nNext: ${next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : '—'}\nID: \`${blog.id}\``, true),
-			],
+		await interaction.update({
+			embeds: [resultEmbed('Announcement scheduled', `**${blog.title}**\n${formatSchedule(blog)} → <#${blog.channelId}>\nNext: ${next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : '—'}\nID: \`${blog.id}\``, true)],
 			components: [],
-		};
-		if (interaction.isFromMessage && interaction.isFromMessage()) await interaction.update(payload);
-		else await interaction.reply({
-			...payload,
-			ephemeral: true
 		});
 		return true;
 	}

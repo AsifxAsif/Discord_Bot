@@ -93,6 +93,7 @@ const GAME_INFO = {
 		mode: '1–2 players'
 	},
 };
+const EVENT_IDS = ['post', 'quick', 'list', 'delete', 'toggle'];
 
 function send(ws, data) {
 	if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
@@ -319,12 +320,21 @@ function publicGame(room, userId) {
 		players: room.players.map(p => ({
 			id: p.id,
 			username: p.username,
-			avatar: p.avatar
+			avatar: p.avatar,
+			// Add game info for each player
+			currentGame: room.selectedGame,
+			isPlaying: room.game !== null && room.game.status === 'playing',
 		})),
 		selectedGame: room.selectedGame,
 		game: g,
 		gameInfo: GAME_INFO,
-		roomStatus: room.players.length >= 2 ? 'ready' : 'waiting'
+		roomStatus: room.players.length >= 2 ? 'ready' : 'waiting',
+		// Add activity summary for the lobby
+		activitySummary: {
+			totalPlayers: room.players.length,
+			gamesInProgress: room.game !== null && room.game.status === 'playing',
+			currentGameName: room.selectedGame ? GAME_INFO[room.selectedGame]?.name : null,
+		}
 	};
 }
 
@@ -454,6 +464,182 @@ function attachActivityServer(server) {
 			return;
 		}
 		if (req.method === 'GET') return serveStatic(req, res);
+		// ===== Leaderboard API =====
+		if (url.pathname === '/api/leaderboard' && req.method === 'POST') {
+			let raw = '';
+			req.on('data', c => {
+				raw += c;
+				if (raw.length > 10000) req.destroy();
+			});
+			req.on('end', async () => {
+				try {
+					const p = JSON.parse(raw || '{}');
+					if (typeof p.accessToken !== 'string') throw new Error('Missing access token.');
+					const user = await getDiscordUser(p.accessToken);
+					const stats = require('./lib/gamestats');
+					const leaderboard = stats.leaderboard(20);
+					const formatted = leaderboard.map(u => ({
+						id: u.id,
+						username: u.username || 'Unknown',
+						points: u.points,
+						wins: u.wins,
+						losses: u.losses,
+						draws: u.draws,
+					}));
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: true,
+						leaderboard: formatted
+					}));
+				} catch (e) {
+					res.writeHead(403, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: false,
+						error: e.message
+					}));
+				}
+			});
+			return;
+		}
+		// ===== Event List API (for the Activity frontend) =====
+		if (url.pathname === '/api/event/list' && req.method === 'POST') {
+			let raw = '';
+			req.on('data', c => {
+				raw += c;
+				if (raw.length > 10000) req.destroy();
+			});
+			req.on('end', async () => {
+				try {
+					const p = JSON.parse(raw || '{}');
+					if (typeof p.accessToken !== 'string' || typeof p.guildId !== 'string') throw new Error('Missing params.');
+					const user = await getDiscordUser(p.accessToken);
+					const guild = await fetch(`https://discord.com/api/v10/guilds/${encodeURIComponent(p.guildId)}/members/${encodeURIComponent(user.id)}`, {
+						headers: {
+							Authorization: `Bot ${process.env.DISCORDTOKEN}`
+						}
+					});
+					if (!guild.ok) throw new Error('Not in guild.');
+					const member = await guild.json();
+					const perms = BigInt(member.permissions || '0');
+					const isAdmin = (perms & BigInt(8)) !== BigInt(0) || process.env.OWNER_USER_ID === user.id;
+					if (!isAdmin) throw new Error('Admin only.');
+					const blogs = require('./lib/blogs');
+					const list = blogs.listBlogs(p.guildId);
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: true,
+						blogs: list
+					}));
+				} catch (e) {
+					res.writeHead(403, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: false,
+						error: e.message
+					}));
+				}
+			});
+			return;
+		}
+		// ===== Event Delete API =====
+		if (url.pathname === '/api/event/delete' && req.method === 'POST') {
+			let raw = '';
+			req.on('data', c => {
+				raw += c;
+				if (raw.length > 10000) req.destroy();
+			});
+			req.on('end', async () => {
+				try {
+					const p = JSON.parse(raw || '{}');
+					if (typeof p.accessToken !== 'string' || typeof p.guildId !== 'string' || typeof p.id !== 'string') throw new Error('Missing params.');
+					const user = await getDiscordUser(p.accessToken);
+					const guild = await fetch(`https://discord.com/api/v10/guilds/${encodeURIComponent(p.guildId)}/members/${encodeURIComponent(user.id)}`, {
+						headers: {
+							Authorization: `Bot ${process.env.DISCORDTOKEN}`
+						}
+					});
+					if (!guild.ok) throw new Error('Not in guild.');
+					const member = await guild.json();
+					const perms = BigInt(member.permissions || '0');
+					const isAdmin = (perms & BigInt(8)) !== BigInt(0) || process.env.OWNER_USER_ID === user.id;
+					if (!isAdmin) throw new Error('Admin only.');
+					const blogs = require('./lib/blogs');
+					const ok = blogs.deleteBlog(p.id);
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok
+					}));
+				} catch (e) {
+					res.writeHead(403, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: false,
+						error: e.message
+					}));
+				}
+			});
+			return;
+		}
+		// ===== Event Toggle API =====
+		if (url.pathname === '/api/event/toggle' && req.method === 'POST') {
+			let raw = '';
+			req.on('data', c => {
+				raw += c;
+				if (raw.length > 10000) req.destroy();
+			});
+			req.on('end', async () => {
+				try {
+					const p = JSON.parse(raw || '{}');
+					if (typeof p.accessToken !== 'string' || typeof p.guildId !== 'string' || typeof p.id !== 'string' || typeof p.enabled !== 'boolean') throw new Error('Missing params.');
+					const user = await getDiscordUser(p.accessToken);
+					const guild = await fetch(`https://discord.com/api/v10/guilds/${encodeURIComponent(p.guildId)}/members/${encodeURIComponent(user.id)}`, {
+						headers: {
+							Authorization: `Bot ${process.env.DISCORDTOKEN}`
+						}
+					});
+					if (!guild.ok) throw new Error('Not in guild.');
+					const member = await guild.json();
+					const perms = BigInt(member.permissions || '0');
+					const isAdmin = (perms & BigInt(8)) !== BigInt(0) || process.env.OWNER_USER_ID === user.id;
+					if (!isAdmin) throw new Error('Admin only.');
+					const blogs = require('./lib/blogs');
+					const ok = blogs.setBlogEnabled(p.id, p.enabled);
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok
+					}));
+				} catch (e) {
+					res.writeHead(403, {
+						'Content-Type': 'application/json',
+						'Cache-Control': 'no-store'
+					});
+					res.end(JSON.stringify({
+						ok: false,
+						error: e.message
+					}));
+				}
+			});
+			return;
+		}
 		res.writeHead(404);
 		res.end('Not found');
 	});
@@ -557,6 +743,11 @@ function attachActivityServer(server) {
 				if (g?.timer) clearTimeout(g.timer);
 				room.selectedGame = null;
 				room.game = null;
+				broadcast(room);
+				return;
+			}
+			if (m.type === 'event') {
+				if (!m.sub || !EVENT_IDS.includes(m.sub)) return;
 				broadcast(room);
 				return;
 			}
@@ -732,6 +923,50 @@ function attachActivityServer(server) {
 					g.roundWinner = null;
 				}
 				broadcast(room);
+				return;
+			}
+			if (url.pathname === '/api/event/verify' && req.method === 'POST') {
+				let raw = '';
+				req.on('data', c => {
+					raw += c;
+					if (raw.length > 10000) req.destroy();
+				});
+				req.on('end', async () => {
+					try {
+						const p = JSON.parse(raw || '{}');
+						if (typeof p.accessToken !== 'string' || typeof p.guildId !== 'string') throw new Error('Missing params.');
+						const user = await getDiscordUser(p.accessToken);
+						// Check guild membership + admin
+						const guild = await fetch(`https://discord.com/api/v10/guilds/${encodeURIComponent(p.guildId)}/members/${encodeURIComponent(user.id)}`, {
+							headers: {
+								Authorization: `Bot ${process.env.DISCORDTOKEN}`
+							}
+						});
+						if (!guild.ok) throw new Error('Not in guild.');
+						const member = await guild.json();
+						const perms = BigInt(member.permissions || '0');
+						const isAdmin = (perms & BigInt(8)) !== BigInt(0) || process.env.OWNER_USER_ID === user.id;
+						res.writeHead(200, {
+							'Content-Type': 'application/json',
+							'Cache-Control': 'no-store'
+						});
+						res.end(JSON.stringify({
+							ok: true,
+							isAdmin,
+							userId: user.id,
+							username: user.global_name || user.username
+						}));
+					} catch (e) {
+						res.writeHead(403, {
+							'Content-Type': 'application/json',
+							'Cache-Control': 'no-store'
+						});
+						res.end(JSON.stringify({
+							ok: false,
+							error: e.message
+						}));
+					}
+				});
 				return;
 			}
 		});

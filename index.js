@@ -43,6 +43,9 @@ const {
 const {
 	handleEventBlogUI
 } = require('./commands/eventblog');
+const {
+	handleEventUI
+} = require('./commands/event'); // <-- NEW
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
 });
@@ -94,7 +97,7 @@ async function runSchedulerTick() {
 				for (const old of takeSuperseded(r.id, eventTime.getTime(), offset)) {
 					await deleteMessage(client, old.channelId, old.messageId);
 				}
-				console.log(`[reminder] Fired ${r.name} (${offset}m) → #${ch.name}`);
+				console.log(`[reminder] Fired ${r.name} (${offset}m) â†’ #${ch.name}`);
 			} catch (e) {
 				console.error(`[reminder] Failed ${r.id}:`, e.message);
 			}
@@ -118,7 +121,7 @@ async function runSchedulerTick() {
 					embeds: [blogEmbed(b)]
 				});
 				markFired(b.id, eventMs);
-				console.log(`[blog] Posted "${b.title}" → #${ch.name}`);
+				console.log(`[blog] Posted "${b.title}" â†’ #${ch.name}`);
 			} catch (e) {
 				console.error(`[blog] Failed ${b.id}:`, e.message);
 			}
@@ -130,7 +133,7 @@ async function runSchedulerTick() {
 	}
 }
 client.once(Events.ClientReady, (c) => {
-	console.log(`✅ Logged in as ${c.user.tag}`);
+	console.log(`âœ… Logged in as ${c.user.tag}`);
 	const autoOff = String(process.env.AUTOREDEEM || 'true').toLowerCase() === 'false';
 	if (!autoOff) {
 		console.log('AUTOREDEEM ON');
@@ -161,7 +164,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 			if (!data) {
 				return interaction.reply({
 					embeds: [errorEmbed('No details', `No stored results for \`${code}\`.`)],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 			let list = [];
@@ -177,7 +180,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				const map = new Map();
 				for (const p of list) map.set(String(p.fid), p);
 				list = Array.from(map.values());
-				title = 'Couldn’t finish / try later';
+				title = "Couldn't finish / try later";
 			} else {
 				return interaction.reply({
 					embeds: [errorEmbed('Unknown', 'Unknown detail type.')],
@@ -210,13 +213,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				if (interaction.user.id !== owner) {
 					return interaction.reply({
 						embeds: [errorEmbed('Not yours', 'Only the owner can remove this.')],
-						ephemeral: true,
+						ephemeral: true
 					});
 				}
 				const ok = reg.removePlayer(owner, fid);
 				return interaction.reply({
-					content: ok ? `🗑️ Removed player \`${fid}\`` : 'Not found.',
-					ephemeral: true,
+					content: ok ? '✅ Removed player `' + fid + '`' : 'Not found.',
+					ephemeral: true
 				});
 			}
 			if (parts[1] === 'ally') {
@@ -226,13 +229,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				if (interaction.user.id !== owner) {
 					return interaction.reply({
 						embeds: [errorEmbed('Not yours', 'Only the owner can remove this.')],
-						ephemeral: true,
+						ephemeral: true
 					});
 				}
 				const ok = reg.removeAlliance(owner, kid, slug);
 				return interaction.reply({
-					content: ok ? `🗑️ Removed alliance **${slug}** (K${kid})` : 'Not found.',
-					ephemeral: true,
+					content: ok ? `✅ Removed alliance **${slug}** (K${kid})` : 'Not found.',
+					ephemeral: true
 				});
 			}
 		} catch (e) {
@@ -245,9 +248,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		return;
 	}
 	// ===== Games (buttons, select menus, modals: customId "g:…") =====
-	if (
-		(interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) && interaction.customId.startsWith('g:')) {
+	if ((interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) && interaction.customId.startsWith('g:')) {
 		if (await handleGamesUI(interaction)) return;
+	}
+	// ===== Invite system =====
+	if (interaction.isButton() && interaction.customId.startsWith('invite:')) {
+		if (await handleInvite(interaction)) return;
+	}
+	if (interaction.isModalSubmit() && interaction.customId.startsWith('invite_modal:')) {
+		if (await handleInvite(interaction)) return;
 	}
 	// ===== Event reminder / blog interactive UI =====
 	if (interaction.isStringSelectMenu() || interaction.isChannelSelectMenu() || interaction.isButton() || interaction.isModalSubmit()) {
@@ -257,6 +266,15 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		} catch (e) {
 			console.error('UI handler error:', e);
 		}
+	}
+	// ===== Event Desk interactive UI =====
+	if ((interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) && interaction.customId.startsWith('event:')) {
+		try {
+			if (await handleEventUI(interaction)) return;
+		} catch (e) {
+			console.error('Event UI handler error:', e);
+		}
+		return;
 	}
 	// ===== Slash commands =====
 	if (!interaction.isChatInputCommand()) return;
@@ -268,7 +286,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		console.error(err);
 		const msg = {
 			embeds: [errorEmbed('Command failed', 'Something went wrong. Please try again.')],
-			ephemeral: true,
+			ephemeral: true
 		};
 		if (interaction.replied || interaction.deferred) await interaction.followUp(msg).catch(() => {});
 		else await interaction.reply(msg).catch(() => {});

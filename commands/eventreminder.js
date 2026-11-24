@@ -19,7 +19,7 @@ const {
 	updateReminder,
 	setEnabled,
 	getNextOccurrence,
-	getReminder,
+	getReminder
 } = require('../lib/reminders');
 const {
 	parseTime,
@@ -48,7 +48,6 @@ function canManage(interaction) {
 	if (isAdmin(interaction)) return true;
 	return interaction.memberPermissions?.has(PermissionFlagsBits.Administrator) || false;
 }
-// In-memory wizard state (per user)
 const wizards = new Map();
 module.exports = {
 	data: new SlashCommandBuilder().setName('eventreminder').setDescription('Event reminder setup (Admin only)').setDefaultMemberPermissions(PermissionFlagsBits.Administrator).addSubcommand((s) => s.setName('setup').setDescription('Interactive setup with dropdowns')).addSubcommand((s) => s.setName('list').setDescription('List all reminders')).addSubcommand((s) => s.setName('delete').setDescription('Delete a reminder by ID').addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true))).addSubcommand((s) => s.setName('edit').setDescription('Edit an existing reminder').addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true))).addSubcommand((s) => s.setName('toggle').setDescription('Enable or disable a reminder').addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true)).addBooleanOption((o) => o.setName('enabled').setDescription('Enable?').setRequired(true))).addSubcommand((s) => s.setName('test').setDescription('Send a test message for a reminder').addStringOption((o) => o.setName('id').setDescription('Reminder ID').setRequired(true))),
@@ -67,26 +66,26 @@ module.exports = {
 			if (!list.length) {
 				return interaction.reply({
 					embeds: [makeEmbed({
-						title: '📅 Reminders',
+						title: '🔔 Reminders',
 						description: '_None yet. Use `/eventreminder setup`_',
 						color: 'info'
 					})],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 			const lines = list.map((r) => {
 				const next = getNextOccurrence(r);
 				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : '—';
-				const note = r.note ? ' · 📜 note' : '';
-				return `${r.enabled ? '🟢' : '🔴'} ${r.emoji || '⚔️'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} · Next ${nextStr}${note}`;
+				const note = r.note ? ' · 📝 note' : '';
+				return `${r.enabled ? '✅' : '❌'} ${r.emoji || '🔔'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} · Next ${nextStr}${note}`;
 			});
 			return interaction.reply({
 				embeds: [makeEmbed({
-					title: `📅 Reminders (${list.length})`,
+					title: `🔔 Reminders (${list.length})`,
 					description: lines.join('\n\n').slice(0, 4000),
 					color: 'info'
 				})],
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 		if (sub === 'delete') {
@@ -94,12 +93,11 @@ module.exports = {
 			const r = getReminder(id);
 			const ok = r && r.guildId === guildId ? deleteReminder(id) : false;
 			if (ok) {
-				// also clean up any reminder messages still sitting in the channel
 				for (const s of r.sent || []) await deleteMessage(interaction.client, s.channelId, s.messageId);
 			}
 			return interaction.reply({
 				embeds: [resultEmbed(ok ? 'Deleted' : 'Not found', `\`${id}\``, !!ok)],
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 		if (sub === 'edit') {
@@ -122,7 +120,7 @@ module.exports = {
 				value: (r.offsets || [60, 10]).join(','),
 				max: 30
 			}), input('emoji', 'Event emoji', {
-				value: r.emoji || '⚔️',
+				value: r.emoji || '🔔',
 				max: 100
 			}), input('note', 'Reminder text / rules', {
 				style: TextInputStyle.Paragraph,
@@ -139,7 +137,7 @@ module.exports = {
 			const ok = r && r.guildId === guildId ? setEnabled(id, enabled) : false;
 			return interaction.reply({
 				embeds: [resultEmbed(ok ? (enabled ? 'Enabled' : 'Disabled') : 'Not found', `\`${id}\``, !!ok)],
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 		if (sub === 'test') {
@@ -182,7 +180,7 @@ module.exports = {
 			})));
 			await interaction.reply({
 				embeds: [makeEmbed({
-					title: '📅 Event Reminder Setup',
+					title: '🔔 Event Reminder Setup',
 					description: '**Step 1/4** — Choose the event',
 					color: 'info'
 				})],
@@ -206,7 +204,6 @@ function input(id, label, {
 	if (max) t.setMaxLength(max);
 	return new ActionRowBuilder().addComponents(t);
 }
-/** Wizard component interactions — called from index.js */
 async function handleEventReminderUI(interaction) {
 	const userId = interaction.user.id;
 	const id = interaction.customId || '';
@@ -252,12 +249,11 @@ async function handleEventReminderUI(interaction) {
 			minute: time.minute,
 			offsets: parseOffsets(get('offsets')),
 			emoji,
-			note: get('note').trim(),
-			// Preserve schedule type, date/recurrence, channel, mention, enabled state and sent history.
+			note: get('note').trim()
 		});
 		await interaction.reply({
 			embeds: [resultEmbed('Reminder updated', `**${updated.name}** ${updated.emoji}\n${formatSchedule(updated)}\nID: \`${updated.id}\``, true)],
-			ephemeral: true,
+			ephemeral: true
 		});
 		return true;
 	}
@@ -269,7 +265,7 @@ async function handleEventReminderUI(interaction) {
 		}).catch(() => {});
 		return true;
 	}
-	/* Step 1: event selected */
+	/* Step 1 */
 	if (id.startsWith('er_event:')) {
 		const eventName = interaction.values[0];
 		const wiz = wizards.get(userId) || {
@@ -300,18 +296,16 @@ async function handleEventReminderUI(interaction) {
 			description: 'Day of month'
 		});
 		await interaction.update({
-			embeds: [
-				makeEmbed({
-					title: '📅 Event Reminder Setup',
-					description: `Event: **${eventName}**${eventName === 'Custom' ? ' _(you\'ll name it in the next form)_' : ''}\n\n**Step 2/4** — Choose schedule type`,
-					color: 'info',
-				}),
-			],
+			embeds: [makeEmbed({
+				title: '🔔 Event Reminder Setup',
+				description: `Event: **${eventName}**${eventName === 'Custom' ? ' _(you\'ll name it in the next form)_' : ''}\n\n**Step 2/4** — Choose schedule type`,
+				color: 'info'
+			})],
 			components: [new ActionRowBuilder().addComponents(typeMenu)],
 		});
 		return true;
 	}
-	/* Step 2: type selected → modal (max 5 fields: name?, time, detail?, offsets, note) */
+	/* Step 2 */
 	if (id.startsWith('er_type:')) {
 		const type = interaction.values[0];
 		const wiz = wizards.get(userId);
@@ -327,12 +321,10 @@ async function handleEventReminderUI(interaction) {
 		wizards.set(userId, wiz);
 		const modal = new ModalBuilder().setCustomId(`er_modal_time:${userId}`).setTitle('Reminder details (UTC)');
 		const rows = [];
-		if (wiz.event === 'Custom') {
-			rows.push(input('name', 'Event name', {
-				placeholder: 'e.g. Guild Raid',
-				max: 60
-			}));
-		}
+		if (wiz.event === 'Custom') rows.push(input('name', 'Event name', {
+			placeholder: 'e.g. Guild Raid',
+			max: 60
+		}));
 		rows.push(input('time', 'Event time UTC (HH:MM)', {
 			placeholder: '20:00',
 			max: 5
@@ -362,13 +354,13 @@ async function handleEventReminderUI(interaction) {
 			style: TextInputStyle.Paragraph,
 			required: false,
 			placeholder: 'This text is the reminder message — rules, rally times…',
-			max: 700,
+			max: 700
 		}));
 		modal.addComponents(...rows);
 		await interaction.showModal(modal);
 		return true;
 	}
-	/* Step 3: modal submitted → pick channel */
+	/* Step 3 */
 	if (id.startsWith('er_modal_time:')) {
 		const wiz = wizards.get(userId);
 		if (!wiz) {
@@ -382,7 +374,7 @@ async function handleEventReminderUI(interaction) {
 		const t = parseTime(get('time'));
 		if (!t) {
 			await interaction.reply({
-				content: '❌ Invalid time. Use `HH:MM` in UTC, e.g. `20:00`. Run `/eventreminder setup` again.',
+				content: '⚠️ Invalid time. Use `HH:MM` in UTC, e.g. `20:00`. Run `/eventreminder setup` again.',
 				ephemeral: true
 			});
 			return true;
@@ -391,7 +383,7 @@ async function handleEventReminderUI(interaction) {
 			const name = get('name').trim();
 			if (!name) {
 				await interaction.reply({
-					content: '❌ Please enter an event name. Run `/eventreminder setup` again.',
+					content: '⚠️ Please enter an event name. Run `/eventreminder setup` again.',
 					ephemeral: true
 				});
 				return true;
@@ -403,7 +395,7 @@ async function handleEventReminderUI(interaction) {
 		const details = parseDetails(wiz.type, get);
 		if (details.error) {
 			await interaction.reply({
-				content: `❌ ${details.error} Run \`/eventreminder setup\` again.`,
+				content: `⚠️ ${details.error} Run \`/eventreminder setup\` again.`,
 				ephemeral: true
 			});
 			return true;
@@ -418,7 +410,7 @@ async function handleEventReminderUI(interaction) {
 		}, details.data);
 		if (wiz.type === 'once' && !getNextOccurrence(wiz)) {
 			await interaction.reply({
-				content: '❌ That date/time is already in the past. Run `/eventreminder setup` again.',
+				content: '⚠️ That date/time is already in the past. Run `/eventreminder setup` again.',
 				ephemeral: true
 			});
 			return true;
@@ -429,19 +421,17 @@ async function handleEventReminderUI(interaction) {
 		wizards.set(userId, wiz);
 		const channelMenu = new ChannelSelectMenuBuilder().setCustomId(`er_channel:${userId}`).setPlaceholder('Select channel for reminders').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setMaxValues(1);
 		await interaction.reply({
-			embeds: [
-				makeEmbed({
-					title: '📅 Event Reminder Setup',
-					description: `Event: **${wiz.name}**\n` + `Schedule: ${formatSchedule(wiz)}\n\n` + `**Step 3/4** — Choose the channel`,
-					color: 'info',
-				}),
-			],
+			embeds: [makeEmbed({
+				title: '🔔 Event Reminder Setup',
+				description: `Event: **${wiz.name}**\nSchedule: ${formatSchedule(wiz)}\n\n**Step 3/4** — Choose the channel`,
+				color: 'info'
+			})],
 			components: [new ActionRowBuilder().addComponents(channelMenu)],
 			ephemeral: true,
 		});
 		return true;
 	}
-	/* Step 4: channel selected → confirm */
+	/* Step 4 */
 	if (id.startsWith('er_channel:')) {
 		const wiz = wizards.get(userId);
 		if (!wiz) {
@@ -459,12 +449,12 @@ async function handleEventReminderUI(interaction) {
 		await interaction.update({
 			embeds: [
 				makeEmbed({
-					title: '📅 Confirm reminder',
-					description: `**${wiz.name}**\n` + `Schedule: ${formatSchedule(wiz)}\n` + `Channel: <#${wiz.channelId}>\n` + `Remind: ${wiz.offsets.map((o) => `${o}m`).join(', ')} before\n` + `Mention: @everyone\n` + `Old reminders: auto-removed when the next one posts / event starts\n\n` + `**Preview** (shows only what you wrote):`,
-					color: 'warning',
+					title: '🔔 Confirm reminder',
+					description: `**${wiz.name}**\nSchedule: ${formatSchedule(wiz)}\nChannel: <#${wiz.channelId}>\nRemind: ${wiz.offsets.map((o) => `${o}m`).join(', ')} before\nMention: @everyone\n\n**Preview** (shows only what you wrote):`,
+					color: 'warning'
 				}),
 				makeEmbed({
-					title: '👁️ Preview',
+					title: '📝 Preview',
 					description: reminderMessage(wiz, previewTime, {
 						test: true
 					}).replace('@everyone', '`@everyone`'),
@@ -483,7 +473,7 @@ async function handleEventReminderUI(interaction) {
 				description: 'Reminder setup cancelled.',
 				color: 'neutral'
 			})],
-			components: [],
+			components: []
 		});
 		return true;
 	}
@@ -517,10 +507,8 @@ async function handleEventReminderUI(interaction) {
 		const next = getNextOccurrence(reminder);
 		const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : '—';
 		await interaction.update({
-			embeds: [
-				resultEmbed('Reminder created', `**${reminder.name}**\n${formatSchedule(reminder)}\nNext: ${nextStr}\nID: \`${reminder.id}\``, true),
-			],
-			components: [],
+			embeds: [resultEmbed('Reminder created', `**${reminder.name}**\n${formatSchedule(reminder)}\nNext: ${nextStr}\nID: \`${reminder.id}\``, true)],
+			components: []
 		});
 		return true;
 	}

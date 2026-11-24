@@ -12,29 +12,38 @@ module.exports = {
 		const fields = [{
 			name: '📝 Account',
 			value: '`/register` · `/myregistrations` · `/roster` · `/show` · `/codes`',
+			inline: false
 		}, {
 			name: '🎮 Games',
-			value: '**Private:** trivia · guess · hangman · scramble · daily\n' + '**Versus:** rps · tictactoe · connect4 · reaction\n' + '`/games <name>` — opens Kingshot Arcade Activity',
+			value: '`/games` — Opens Kingshot Arcade (all 9 games)\n`/stats` — Your personal game stats\n`/leaderboard` — Top 10 players',
+			inline: false
+		}, {
+			name: '📅 Events',
+			value: '`/eventreminder setup` — Dropdowns + form (with rules/note field)\n`/eventreminder list|edit|delete|toggle|test`\n`/eventblog post` — Write it, then **Post now** or **Schedule**\n`/eventblog quick` — Quick LIVE post (now or scheduled)\n`/eventblog list|delete|toggle` — Scheduled announcements',
+			inline: false
+		}, {
+			name: '🔗 Invite',
+			value: 'Use the **🎮 Invite** button in the Activity lobby to invite specific players or post invites to channels.',
+			inline: false
 		}, {
 			name: 'Other',
-			value: '`/ping` · `/help`'
+			value: '`/ping` · `/help`',
+			inline: false
 		}, ];
 		if (isAdmin) {
 			fields.push({
 				name: '⚙️ Admin (hidden from members)',
-				value: '`/eventreminder setup` — dropdowns + form (with rules/note field)\n' + '`/eventreminder list|delete|toggle|test`\n' + '`/eventblog post` — write it, then **post now** or **schedule**\n' + '`/eventblog quick` — quick LIVE post (now or scheduled)\n' + '`/eventblog list|delete|toggle` — scheduled announcements\n' + '`/auto` · `/stats`',
+				value: '`/auto` · `/stats` (bot-wide stats + user breakdown)',
 			});
 		}
 		await interaction.reply({
-			embeds: [
-				makeEmbed({
-					title: '🎁 Kingshot Bot',
-					color: 'info',
-					description: 'Gift codes · event tools · games',
-					fields,
-					footer: 'Admin commands use menus & modals — no long option lists',
-				}),
-			],
+			embeds: [makeEmbed({
+				title: '🏰 Kingshot Bot',
+				color: 'info',
+				description: 'Gift codes · event tools · games · invites',
+				fields,
+				footer: 'Admin commands use menus & modals — no long option lists',
+			})],
 			ephemeral: true,
 		});
 	},
