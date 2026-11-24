@@ -8,7 +8,7 @@ module.exports = {
 	data: (new SlashCommandBuilder).setName("ping").setDescription("Bot latency"),
 	async execute(interaction) {
 		const sent = await interaction.reply({
-			content: "🏓 Measuring latency…",
+			content: "ðŸ“ Measuring latencyâ€¦",
 			fetchReply: true,
 			ephemeral: true
 		});
@@ -16,7 +16,7 @@ module.exports = {
 		const wsMs = Math.round(interaction.client.ws.ping);
 		const quality = wsMs < 150 ? "Excellent" : wsMs < 300 ? "Good" : "High latency";
 		const embed = makeEmbed({
-			title: "🏓 Bot connection status",
+			title: "ðŸ“ Bot connection status",
 			color: wsMs < 300 ? "success" : "warning",
 			fields: [{
 				name: "Response time",

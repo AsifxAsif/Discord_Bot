@@ -6,37 +6,37 @@ const app = document.querySelector('#app');
 const GAMES = [{
 	id: 'ttt',
 	name: 'Tic-Tac-Toe',
-	icon: '⭕',
+	icon: 'â­•',
 	desc: 'Connect three symbols in a row.',
 	tag: 'Classic'
 }, {
 	id: 'connect4',
 	name: 'Connect Four',
-	icon: '🔵',
+	icon: 'ðŸ”µ',
 	desc: 'Drop four discs into a row.',
 	tag: 'Strategy'
 }, {
 	id: 'rps',
 	name: 'Rock Paper Scissors',
-	icon: '✊',
+	icon: 'âœŠ',
 	desc: 'Best of three. Outsmart your rival.',
 	tag: 'Quick duel'
 }, {
 	id: 'reaction',
 	name: 'Reaction Duel',
-	icon: '⚡',
+	icon: 'âš¡',
 	desc: 'Wait for GO and tap faster.',
 	tag: 'Reflex'
 }, {
 	id: 'trivia',
 	name: 'Kingshot Trivia',
-	icon: '📋',
+	icon: 'ðŸ“‹',
 	desc: 'Five questions about Kingshot.',
 	tag: 'Knowledge'
 }, {
 	id: 'guess',
 	name: 'Guess the Number',
-	icon: '🔢',
+	icon: 'ðŸ”¢',
 	desc: 'Find the hidden number first.',
 	tag: 'Puzzle'
 }, {
@@ -48,13 +48,13 @@ const GAMES = [{
 }, {
 	id: 'scramble',
 	name: 'Word Scramble',
-	icon: '🔤',
+	icon: 'ðŸ”¤',
 	desc: 'Race to unscramble five terms.',
 	tag: 'Word race'
 }, {
 	id: 'daily',
 	name: 'Daily Challenge',
-	icon: '📅',
+	icon: 'ðŸ“…',
 	desc: 'A shared daily five-question challenge.',
 	tag: 'Daily'
 }, ];
@@ -92,7 +92,7 @@ function playerCard(p, i, g) {
                 <strong>${esc(p?.username || 'Waiting for player')}</strong>
                 <span>${p ? (i === 0 ? 'Player 1' : 'Player 2') : 'Open the same Activity to join'}</span>
             </div>
-            <b class="seat">${p ? (i === 0 ? 'P1' : 'P2') : '—'}</b>
+            <b class="seat">${p ? (i === 0 ? 'P1' : 'P2') : 'â€”'}</b>
         </div>
     `;
 }
@@ -101,9 +101,9 @@ function header() {
 	return `
         <header class="topbar">
             <div class="brand">
-                <div class="brand-icon">🏰</div>
+                <div class="brand-icon">ðŸ°</div>
                 <div>
-                    <div class="eyebrow">PXD ALLIANCE · KINGDOM ARCADE</div>
+                    <div class="eyebrow">PXD ALLIANCE Â· KINGDOM ARCADE</div>
                     <h1>PXD <span>Kingshot</span></h1>
                 </div>
             </div>
@@ -122,8 +122,8 @@ function shell(content) {
             ${content}
             <footer class="footer">
                 ${esc(myName())}
-                <span>·</span>
-                PXD · For the glory of the kingdom
+                <span>Â·</span>
+                PXD Â· For the glory of the kingdom
             </footer>
         </main>
     `;
@@ -167,7 +167,7 @@ function wireCommon() {
 async function showLeaderboard() {
 	const detail = document.getElementById('event-detail');
 	if (!detail) return;
-	detail.innerHTML = '<p>Loading leaderboard…</p>';
+	detail.innerHTML = '<p>Loading leaderboardâ€¦</p>';
 	try {
 		const res = await fetch('/api/leaderboard', {
 			headers: {
@@ -186,10 +186,10 @@ async function showLeaderboard() {
 			detail.innerHTML = '<p>No players have competed yet.</p>';
 			return;
 		}
-		const medals = ['🥇', '🥈', '🥉'];
+		const medals = ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'];
 		detail.innerHTML = `
             <div class="leaderboard">
-                <h3>🏆 Kingshot Leaderboard</h3>
+                <h3>ðŸ† Kingshot Leaderboard</h3>
                 ${players.map((p, i) => `
                     <div class="lb-row">
                         <span class="lb-rank">${medals[i] || `${i + 1}.`}</span>
@@ -212,7 +212,7 @@ function showInvitePanel() {
 	if (!detail) return;
 	detail.innerHTML = `
         <div class="invite-panel">
-            <h3>🎮 Invite to Play</h3>
+            <h3>ðŸŽ® Invite to Play</h3>
             <label>Game</label>
             <select id="invite-game">
                 ${GAMES.map(g => `<option value="${g.id}">${g.icon} ${g.name}</option>`).join('')}
@@ -236,7 +236,7 @@ function showInvitePanel() {
 			target: user,
 			targetType: 'player'
 		});
-		document.getElementById('invite-detail').innerHTML = `<p>✅ Invite sent to player <code>${esc(user)}</code> for <strong>${esc(game)}</strong>!</p>`;
+		document.getElementById('invite-detail').innerHTML = `<p>âœ… Invite sent to player <code>${esc(user)}</code> for <strong>${esc(game)}</strong>!</p>`;
 	});
 	document.getElementById('invite-channel-btn')?.addEventListener('click', async () => {
 		const game = document.getElementById('invite-game')?.value || 'ttt';
@@ -249,7 +249,7 @@ function showInvitePanel() {
 			target: channel,
 			targetType: 'channel'
 		});
-		document.getElementById('invite-detail').innerHTML = `<p>✅ Invite posted to channel <code>${esc(channel)}</code> for <strong>${esc(game)}</strong>!</p>`;
+		document.getElementById('invite-detail').innerHTML = `<p>âœ… Invite posted to channel <code>${esc(channel)}</code> for <strong>${esc(game)}</strong>!</p>`;
 	});
 }
 /* =====================================================================
@@ -258,9 +258,9 @@ function showInvitePanel() {
 function renderEventDesk() {
 	shell(`
         <section class="intro game-intro">
-            <button class="back-button" id="back-menu">← All games</button>
+            <button class="back-button" id="back-menu">â† All games</button>
             <div class="eyebrow">KINGSHOT ARCADE</div>
-            <h2>📝 Event Desk</h2>
+            <h2>ðŸ“ Event Desk</h2>
             <p>Post and schedule event announcements for your guild.</p>
         </section>
 
@@ -269,8 +269,8 @@ function renderEventDesk() {
                 <button class="primary-button" data-action="event:post">Post announcement</button>
                 <button class="primary-button" data-action="event:quick">Quick LIVE post</button>
                 <button class="ghost-button" data-action="event:list">Scheduled</button>
-                <button class="ghost-button" data-action="event:leaderboard">🏆 Leaderboard</button>
-                <button class="ghost-button" data-action="event:invite">🎮 Invite</button>
+                <button class="ghost-button" data-action="event:leaderboard">ðŸ† Leaderboard</button>
+                <button class="ghost-button" data-action="event:invite">ðŸŽ® Invite</button>
             </div>
             <div id="event-detail" style="margin-top:18px;"></div>
         </section>
@@ -319,13 +319,13 @@ function showEventForm(mode) {
         <div class="event-form">
             <h3>${mode === 'post' ? 'Post announcement' : 'Quick LIVE post'}</h3>
             <label>Event name</label>
-            <input id="ev-event" type="text" placeholder="Bear Trap / Arena / KVK…" maxlength="60" />
+            <input id="ev-event" type="text" placeholder="Bear Trap / Arena / KVKâ€¦" maxlength="60" />
             <label>Title</label>
             <input id="ev-title" type="text" placeholder="Weekend Bear Trap schedule" maxlength="200" />
             <label>Content</label>
-            <textarea id="ev-content" rows="4" placeholder="Write the announcement…" maxlength="2000"></textarea>
+            <textarea id="ev-content" rows="4" placeholder="Write the announcementâ€¦" maxlength="2000"></textarea>
             <label>Image URL (optional)</label>
-            <input id="ev-image" type="text" placeholder="https://…" maxlength="400" />
+            <input id="ev-image" type="text" placeholder="https://â€¦" maxlength="400" />
             <div class="action-row">
                 <button class="primary-button" id="ev-submit">Post now</button>
                 <button class="ghost-button" id="ev-cancel">Cancel</button>
@@ -352,7 +352,7 @@ function showEventForm(mode) {
 			content,
 			image
 		});
-		detail.innerHTML = '<p>✅ Submitted! Check Discord for the result.</p>';
+		detail.innerHTML = '<p>âœ… Submitted! Check Discord for the result.</p>';
 	});
 }
 async function quickEvent() {
@@ -367,7 +367,7 @@ async function quickEvent() {
 async function listEvents() {
 	const detail = document.getElementById('event-detail');
 	if (!detail) return;
-	detail.innerHTML = '<p>Loading scheduled events…</p>';
+	detail.innerHTML = '<p>Loading scheduled eventsâ€¦</p>';
 	try {
 		const res = await fetch('/api/event/list', {
 			headers: {
@@ -389,7 +389,7 @@ async function listEvents() {
 		detail.innerHTML = blogs.map(b => `
             <div class="event-list-item">
                 <strong>${esc(b.title)}</strong> <code>${esc(b.id)}</code>
-                <div>${esc(b.event)} · ${esc(b.channelId ? `<#${b.channelId}>` : 'no channel')} · ${b.enabled ? 'Enabled' : 'Disabled'}</div>
+                <div>${esc(b.event)} Â· ${esc(b.channelId ? `<#${b.channelId}>` : 'no channel')} Â· ${b.enabled ? 'Enabled' : 'Disabled'}</div>
                 <div class="action-row">
                     <button class="ghost-button" data-event-delete="${esc(b.id)}">Delete</button>
                     <button class="ghost-button" data-event-toggle="${esc(b.id)}" data-enabled="${b.enabled}">${b.enabled ? 'Disable' : 'Enable'}</button>
@@ -461,8 +461,8 @@ function playersPanel(g) {
 function endControls(g) {
 	if (!['won', 'draw', 'finished'].includes(g.status)) return '';
 	let result = g.winner === -1 ? "It's a draw!" : g.winner === me() ? 'You win!' : g.winner >= 0 ? `${esc(state.players[g.winner]?.username || 'Opponent')} wins!` : 'Round complete';
-	if (g.id === 'guess' && g.answer !== undefined) result += ` · Number: ${g.answer}`;
-	if (g.id === 'hangman' && g.revealed) result += ` · Word: ${g.revealed.join('')}`;
+	if (g.id === 'guess' && g.answer !== undefined) result += ` Â· Number: ${g.answer}`;
+	if (g.id === 'hangman' && g.revealed) result += ` Â· Word: ${g.revealed.join('')}`;
 	return `
         <div class="end-panel">
             <strong>${result}</strong>
@@ -485,7 +485,7 @@ function boardTtt(g) {
                     data-payload='{"index":${i}}'
                     ${state.players.length < 2 || g.status !== 'playing' || g.turn !== me() || v ? 'disabled' : ''}
                 >
-                    ${v === 'X' ? '✕' : v === 'O' ? '○' : ''}
+                    ${v === 'X' ? 'âœ•' : v === 'O' ? 'â—‹' : ''}
                 </button>
             `).join('')}
         </div>
@@ -503,7 +503,7 @@ function boardConnect(g) {
 	data - payload = '{"col":${c}}'
 	$ {
 		state.players.length < 2 || g.status !== 'playing' || g.turn !== me() ? 'disabled' : ''
-	} > ▼ < /button>
+	} > â–¼ < /button>
 	`).join('')}
 
       ${g.board.map((row, r) => row.map((v, c) => `
@@ -533,10 +533,10 @@ function renderGame() {
 		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn' : "Opponent's turn") : g.status === 'draw' ? 'Board is full' : g.winner === me() ? 'You connected three!' : 'Opponent connected three.';
 		body = boardTtt(g);
 	} else if (g.id === 'connect4') {
-		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn — choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
+		status = g.status === 'playing' ? (g.turn === me() ? 'Your turn â€” choose a column' : "Opponent's turn") : g.status === 'draw' ? 'The board is full' : g.winner === me() ? 'Four in a row!' : 'Opponent connected four.';
 		body = boardConnect(g);
 	} else if (g.id === 'rps') {
-		status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed — continue when ready' : g.picks[me()] ? 'Choice locked — waiting for opponent' : 'Choose your move';
+		status = g.status === 'finished' ? 'Match complete' : g.revealed ? 'Round revealed â€” continue when ready' : g.picks[me()] ? 'Choice locked â€” waiting for opponent' : 'Choose your move';
 		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.wins[0]}</b></div>
@@ -545,14 +545,14 @@ function renderGame() {
             </div>
             ${g.revealed ? `
                 <div class="rps-reveal">
-                    <div>${g.picks[0] === 'rock' ? '✊' : g.picks[0] === 'paper' ? '✋' : '✌️'}<small>${esc(state.players[0]?.username || 'P1')}</small></div>
+                    <div>${g.picks[0] === 'rock' ? 'âœŠ' : g.picks[0] === 'paper' ? 'âœ‹' : 'âœŒï¸'}<small>${esc(state.players[0]?.username || 'P1')}</small></div>
                     <strong>VS</strong>
-                    <div>${g.picks[1] === 'rock' ? '✊' : g.picks[1] === 'paper' ? '✋' : '✌️'}<small>${esc(state.players[1]?.username || 'P2')}</small></div>
+                    <div>${g.picks[1] === 'rock' ? 'âœŠ' : g.picks[1] === 'paper' ? 'âœ‹' : 'âœŒï¸'}<small>${esc(state.players[1]?.username || 'P2')}</small></div>
                 </div>
                 ${g.status === 'playing' ? '<button class="primary-button" data-action="next_round">Next round</button>' : ''}
             ` : `
                 <div class="choice-row">
-                    ${[['rock','✊','Rock'],['paper','✋','Paper'],['scissors','✌️','Scissors']].map(([v,e,n]) => `
+                    ${[['rock','âœŠ','Rock'],['paper','âœ‹','Paper'],['scissors','âœŒï¸','Scissors']].map(([v,e,n]) => `
                         <button class="choice-button" data-action="pick" data-payload='{"choice":"${v}"}' ${state.players.length < 2 || g.picks[me()] ? 'disabled' : ''}>
                             <span>${e}</span>${n}
                         </button>
@@ -561,17 +561,17 @@ function renderGame() {
             `}
         `;
 	} else if (g.id === 'reaction') {
-		status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signal…' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || '—'} ms`;
+		status = g.phase === 'waiting' ? 'Waiting for game start' : g.phase === 'countdown' ? 'Wait for the green signalâ€¦' : g.phase === 'go' ? 'GO! TAP NOW!' : g.phase === 'false-start' ? 'False start!' : `Reaction time: ${g.reactionMs || 'â€”'} ms`;
 		body = `
             <div class="reaction-zone ${g.phase === 'go' ? 'go' : ''}">
-                <div class="reaction-symbol">${g.phase === 'go' ? '⚡' : g.phase === 'countdown' ? '⏳' : g.phase === 'false-start' ? '⛔' : '⚡'}</div>
-                <h3>${g.phase === 'go' ? 'TAP!' : g.phase === 'countdown' ? 'WAIT…' : g.phase === 'false-start' ? 'Too early!' : g.phase === 'done' ? 'Finished' : 'Get ready'}</h3>
+                <div class="reaction-symbol">${g.phase === 'go' ? 'âš¡' : g.phase === 'countdown' ? 'â³' : g.phase === 'false-start' ? 'â›”' : 'âš¡'}</div>
+                <h3>${g.phase === 'go' ? 'TAP!' : g.phase === 'countdown' ? 'WAITâ€¦' : g.phase === 'false-start' ? 'Too early!' : g.phase === 'done' ? 'Finished' : 'Get ready'}</h3>
                 <button class="primary-button reaction-button" data-action="tap" ${g.phase !== 'go' ? 'disabled' : ''}>${g.phase === 'go' ? 'TAP NOW' : 'WAIT FOR GO'}</button>
             </div>
         `;
 	} else if (g.id === 'trivia' || g.id === 'daily') {
 		const q = g.question;
-		status = `Question ${g.index + 1} of 5 · ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
+		status = `Question ${g.index + 1} of 5 Â· ${g.answers.filter(Boolean).length}/${state.players.length} answered`;
 		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
@@ -589,13 +589,13 @@ function renderGame() {
                             </button>
                         `).join('')}
                     </div>
-                    ${g.myAnswer ? `<p class="answer-feedback">${g.myAnswer.correct ? '✅ Correct · +10 points' : 'Not quite · keep going'}</p>` : ''}
-                    ${(state.players.length < 2 || g.answers.every(Boolean)) ? '<button class="primary-button" data-action="next_question">Next question →</button>' : ''}
+                    ${g.myAnswer ? `<p class="answer-feedback">${g.myAnswer.correct ? 'âœ… Correct Â· +10 points' : 'Not quite Â· keep going'}</p>` : ''}
+                    ${(state.players.length < 2 || g.answers.every(Boolean)) ? '<button class="primary-button" data-action="next_question">Next question â†’</button>' : ''}
                 </div>
             ` : ''}
         `;
 	} else if (g.id === 'guess') {
-		status = `Possible range ${g.low}–${g.high} · ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
+		status = `Possible range ${g.low}â€“${g.high} Â· ${g.myGuesses?.length || 0}/${g.maxGuesses} guesses`;
 		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.guesses[0].length}/${g.maxGuesses}</b></div>
@@ -612,7 +612,7 @@ function renderGame() {
                     ${g.guesses.map((arr, i) => `
                         <div>
                             <b>${esc(state.players[i]?.username || `P${i + 1}`)}</b>
-                            <span>${arr.map(n => g.answer === n ? '🎯' : `${n} ${g.answer !== undefined ? (n < g.answer ? '↑' : '↓') : '·'}`).join(' · ') || 'No guesses yet'}</span>
+                            <span>${arr.map(n => g.answer === n ? 'ðŸŽ¯' : `${n} ${g.answer !== undefined ? (n < g.answer ? 'â†‘' : 'â†“') : 'Â·'}`).join(' Â· ') || 'No guesses yet'}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -620,7 +620,7 @@ function renderGame() {
         `;
 	} else if (g.id === 'hangman') {
 		const guessed = new Set(g.guessed || []);
-		status = `${g.lives} lives remaining · ${(g.guessed || []).length} letters guessed`;
+		status = `${g.lives} lives remaining Â· ${(g.guessed || []).length} letters guessed`;
 		const revealedLetters = g.revealed || Array.from({
 			length: g.wordLength || 8
 		}, () => '_');
@@ -632,11 +632,11 @@ function renderGame() {
                         <button class="letter-button" data-action="letter" data-payload='{"letter":"${l}"}' ${guessed.has(l) || g.status !== 'playing' ? 'disabled' : ''}>${l}</button>
                     `).join('')}
                 </div>
-                <button class="ghost-button" data-action="hint" ${g.lives <= 1 || g.status !== 'playing' ? 'disabled' : ''}>Reveal a letter · −1 life</button>
+                <button class="ghost-button" data-action="hint" ${g.lives <= 1 || g.status !== 'playing' ? 'disabled' : ''}>Reveal a letter Â· âˆ’1 life</button>
             </div>
         `;
 	} else if (g.id === 'scramble') {
-		status = `Word ${g.index + 1} of 5 · ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
+		status = `Word ${g.index + 1} of 5 Â· ${g.roundDone ? 'Round solved' : 'Race to solve it first'}`;
 		body = `
             <div class="score-strip">
                 <div><small>${esc(state.players[0]?.username || 'P1')}</small><b>${g.scores[0]}</b></div>
@@ -649,13 +649,13 @@ function renderGame() {
                     <input id="scramble-answer" type="text" maxlength="24" placeholder="Unscramble the word" required ${g.roundDone ? 'disabled' : ''}>
                     <button class="primary-button" type="submit" ${g.roundDone ? 'disabled' : ''}>Submit</button>
                 </form>
-                ${g.roundDone ? `<p class="answer-feedback">${esc(state.players[g.roundWinner]?.username || 'Player')} solved it! +10 points</p><button class="primary-button" data-action="next_word">Next word →</button>` : ''}
+                ${g.roundDone ? `<p class="answer-feedback">${esc(state.players[g.roundWinner]?.username || 'Player')} solved it! +10 points</p><button class="primary-button" data-action="next_word">Next word â†’</button>` : ''}
             </div>
         `;
 	}
 	const gameHtml = `
         <section class="intro game-intro">
-            <button class="back-button" id="back-menu">← All games</button>
+            <button class="back-button" id="back-menu">â† All games</button>
             <div class="eyebrow">KINGSHOT ARCADE</div>
             <h2>${info.icon} ${info.name}</h2>
             <p>${info.desc}</p>
@@ -695,9 +695,14 @@ function render() {
 
 function renderMenu() {
 	const players = state?.players || [];
+	const gameInfo = state?.gameInfo || {};
+	const activeGames = players.filter((p) => p && p.isPlaying && p.currentGame).map((p) => ({
+		username: p.username || 'Player',
+		game: (gameInfo[p.currentGame] && gameInfo[p.currentGame].name) || p.currentGame,
+	}));
 	shell(`
         <section class="intro">
-            <div class="eyebrow">PXD ALLIANCE · THE ROYAL GAME HALL</div>
+            <div class="eyebrow">PXD ALLIANCE Â· THE ROYAL GAME HALL</div>
             <h2>Choose your <span>battle</span></h2>
             <p>Gather your allies, choose a game, and claim victory for PXD.</p>
         </section>
@@ -707,11 +712,11 @@ function renderMenu() {
                 <div class="versus">VS</div>
                 ${playerCard(players[1], 1, null)}
             </div>
-            <div class="lobby-note">${players.length < 2 ? 'Waiting for a second player — Share this Activity with a friend' : 'Both players are in. Choose any game below.'}</div>
+            <div class="lobby-note">${players.length < 2 ? 'Waiting for a second player â€” Share this Activity with a friend' : 'Both players are in. Choose any game below.'}</div>
         </section>
         ${activeGames.length > 0 ? `
         <section class="match-card" style="margin-top:18px;">
-            <h3 style="margin:0 0 10px;color:#e0b65f;">🎮 Players Currently Playing</h3>
+            <h3 style="margin:0 0 10px;color:#e0b65f;">ðŸŽ® Players Currently Playing</h3>
             <div class="active-games">
                 ${activeGames.map(p => `
                     <div class="active-game-item">
@@ -730,15 +735,15 @@ function renderMenu() {
                     <span class="game-tag">${g.tag}</span>
                     <strong>${g.name}</strong>
                     <small>${g.desc}</small>
-                    <span class="tile-arrow">Play →</span>
+                    <span class="tile-arrow">Play â†’</span>
                 </button>
             `).join('')}
         </section>
         <section class="match-card" style="margin-top:18px;">
             <div class="action-row" style="flex-wrap:wrap;gap:8px;">
-                <button class="primary-button" data-action="event:desk">📝 Event Desk</button>
-                <button class="ghost-button" data-action="event:leaderboard">🏆 Leaderboard</button>
-                <button class="ghost-button" data-action="event:invite">🎮 Invite</button>
+                <button class="primary-button" data-action="event:desk">ðŸ“ Event Desk</button>
+                <button class="ghost-button" data-action="event:leaderboard">ðŸ† Leaderboard</button>
+                <button class="ghost-button" data-action="event:invite">ðŸŽ® Invite</button>
             </div>
         </section>
     `);
@@ -811,8 +816,8 @@ function connectSocket() {
 async function boot() {
 	shell(`
         <section class="intro">
-            <div class="eyebrow">PXD ALLIANCE · KINGDOM ARCADE</div>
-            <h2>Opening the <span>Royal Game Hall</span>…</h2>
+            <div class="eyebrow">PXD ALLIANCE Â· KINGDOM ARCADE</div>
+            <h2>Opening the <span>Royal Game Hall</span>â€¦</h2>
             <p>Connecting to Discord Activity.</p>
         </section>
     `);

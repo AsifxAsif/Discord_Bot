@@ -45,7 +45,7 @@ module.exports = {
 			return interaction.reply({
 				embeds: [
 					makeEmbed({
-						title: '📊 Your roster count',
+						title: 'ðŸ“Š Your roster count',
 						color: 'info',
 						fields: [{
 							name: 'Solo players',
@@ -62,12 +62,12 @@ module.exports = {
 			});
 		}
 		if (sub === 'list') {
-			const players = (u.players || []).map((p) => `• **${p.name || 'Player'}** \`${p.fid}\` · K${p.kid ?? '?'}`).join('\n') || '_None — `/register player`_';
-			const alliances = (u.alliances || []).map((a) => `• **${a.name}** [${a.abbr || a.slug}] · K${a.kid}`).join('\n') || '_None — `/register alliance`_';
+			const players = (u.players || []).map((p) => `â€¢ **${p.name || 'Player'}** \`${p.fid}\` Â· K${p.kid ?? '?'}`).join('\n') || '_None â€” `/register player`_';
+			const alliances = (u.alliances || []).map((a) => `â€¢ **${a.name}** [${a.abbr || a.slug}] Â· K${a.kid}`).join('\n') || '_None â€” `/register alliance`_';
 			return interaction.reply({
 				embeds: [
 					makeEmbed({
-						title: '📋 Your registrations',
+						title: 'ðŸ“‹ Your registrations',
 						color: 'info',
 						fields: [{
 							name: `Players (${(u.players || []).length}/${MAX_PLAYERS})`,
@@ -86,7 +86,7 @@ module.exports = {
 		if (!(u.players || []).length && !(u.alliances || []).length) {
 			return interaction.reply({
 				embeds: [
-					errorEmbed('Nothing registered', 'Register first:\n`/register player uid:…`\n`/register alliance server:… name:…`'),
+					errorEmbed('Nothing registered', 'Register first:\n`/register player uid:â€¦`\n`/register alliance server:â€¦ name:â€¦`'),
 				],
 				ephemeral: true,
 			});
@@ -108,12 +108,12 @@ module.exports = {
 				if (match) {
 					p.name = match.name || p.name;
 					if (match.kid != null) p.kid = match.kid;
-					lines.push(`✅ Player **${p.name}** \`${p.fid}\` · K${p.kid ?? '?'}`);
+					lines.push(`âœ… Player **${p.name}** \`${p.fid}\` Â· K${p.kid ?? '?'}`);
 				} else {
-					lines.push(`⚠️ Player \`${p.fid}\` — kept as registered`);
+					lines.push(`âš ï¸ Player \`${p.fid}\` â€” kept as registered`);
 				}
 			} catch (e) {
-				lines.push(`⚠️ Player \`${p.fid}\` — ${e.message}`);
+				lines.push(`âš ï¸ Player \`${p.fid}\` â€” ${e.message}`);
 			}
 			players[i] = p;
 		}
@@ -129,9 +129,9 @@ module.exports = {
 				a.name = alliance.name || a.name;
 				a.abbr = alliance.abbr || a.abbr;
 				totalAllianceMembers += members.length;
-				lines.push(`✅ Alliance **${a.name}** [${a.abbr || a.slug}] · K${a.kid} · **${members.length}** members`);
+				lines.push(`âœ… Alliance **${a.name}** [${a.abbr || a.slug}] Â· K${a.kid} Â· **${members.length}** members`);
 			} catch (e) {
-				lines.push(`⚠️ Alliance **${a.name || a.slug}** K${a.kid} — ${e.message}`);
+				lines.push(`âš ï¸ Alliance **${a.name || a.slug}** K${a.kid} â€” ${e.message}`);
 			}
 			alliances[i] = a;
 		}
@@ -144,7 +144,7 @@ module.exports = {
 		return interaction.editReply({
 			embeds: [
 				makeEmbed({
-					title: '🔄 Roster synced',
+					title: 'ðŸ”„ Roster synced',
 					color: 'success',
 					description: lines.join('\n').slice(0, 4000) || '_Done_',
 					fields: [{

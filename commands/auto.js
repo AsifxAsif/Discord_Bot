@@ -30,7 +30,7 @@ module.exports = {
 			});
 			const state = loadAutoState();
 			const seen = loadSeen();
-			let activeList = "—";
+			let activeList = "â€”";
 			let activeCount = 0;
 			try {
 				const active = await fetchActiveCodes();
@@ -42,12 +42,12 @@ module.exports = {
 			const done = Object.keys(seen.codes || {});
 			const asDiscordTime = value => value && !Number.isNaN(new Date(value).getTime()) ? `<t:${Math.floor(new Date(value).getTime()/1e3)}:R>` : "No record yet";
 			const embed = makeEmbed({
-				title: "🤖 Automatic redemption status",
+				title: "ðŸ¤– Automatic redemption status",
 				color: auto.isAutoRunning() ? "success" : "neutral",
 				description: auto.isAutoRunning() ? "The scanner is running and will check for newly discovered gift codes." : "The scanner is currently stopped.",
 				fields: [{
 					name: "Scanner",
-					value: auto.isAutoRunning() ? "🟢 Running" : "⏹ Stopped",
+					value: auto.isAutoRunning() ? "ðŸŸ¢ Running" : "â¹ Stopped",
 					inline: true
 				}, {
 					name: "Scan interval",
@@ -84,7 +84,7 @@ module.exports = {
 			if (!process.env.NOTIFYCHANNELID) {
 				await interaction.reply({
 					embeds: [makeEmbed({
-						title: "🤖 Automatic redemption starting",
+						title: "ðŸ¤– Automatic redemption starting",
 						description: "The scanner will run, but no channel notifications will be posted because `NOTIFYCHANNELID` is not configured.",
 						color: "warning",
 						fields: [{
@@ -124,7 +124,7 @@ module.exports = {
 			auto.stopAuto();
 			return interaction.reply({
 				embeds: [makeEmbed({
-					title: "⏹ Automatic redemption stopped",
+					title: "â¹ Automatic redemption stopped",
 					description: "The scheduled scanner has been stopped. You can restart it with `/auto start`.",
 					color: "neutral",
 					fields: [{
@@ -142,7 +142,7 @@ module.exports = {
 			});
 			await interaction.editReply({
 				embeds: [makeEmbed({
-					title: "🔄 Scan in progress",
+					title: "ðŸ”„ Scan in progress",
 					description: "Checking active gift codes and processing any new codes for registered targets.",
 					color: "info",
 					footer: "This may take a while depending on target count and rate limits"

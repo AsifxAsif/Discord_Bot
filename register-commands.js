@@ -47,14 +47,14 @@ const rest = new REST({
 			contexts: [0, 1, 2],
 		};
 		const body = [...commands, entryPoint];
-		console.log(`Registering ${commands.length} chat command(s) + Kingshot Arcade entry point…`);
+		console.log(`Registering ${commands.length} chat command(s) + Kingshot Arcade entry pointâ€¦`);
 		const data = await rest.put(Routes.applicationCommands(process.env.CLIENTID), {
 			body
 		});
 		console.log(`Registered ${data.length} application command(s).`);
-		console.log('✅ Open Discord App Launcher → Kingshot Arcade to launch the graphical Activity.');
+		console.log('âœ… Open Discord App Launcher â†’ Kingshot Arcade to launch the graphical Activity.');
 	} catch (error) {
-		console.error('❌ Failed to register Discord commands:', error);
+		console.error('âŒ Failed to register Discord commands:', error);
 		process.exitCode = 1;
 	}
 })();

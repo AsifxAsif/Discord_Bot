@@ -36,7 +36,7 @@ module.exports = {
 		const users = listAllUsers();
 		// Overview embed
 		const overview = makeEmbed({
-			title: '📊 Bot stats',
+			title: 'ðŸ“Š Bot stats',
 			color: 'info',
 			fields: [{
 				name: 'Discord users registered',
@@ -64,14 +64,14 @@ module.exports = {
 				inline: true
 			}, {
 				name: 'Last scan',
-				value: st.lastScanAt ? st.lastScanAt.slice(0, 19).replace('T', ' ') : '—',
+				value: st.lastScanAt ? st.lastScanAt.slice(0, 19).replace('T', ' ') : 'â€”',
 				inline: true
 			}, {
 				name: 'Last redeem',
-				value: st.lastRedeemAt ? st.lastRedeemAt.slice(0, 19).replace('T', ' ') : '—',
+				value: st.lastRedeemAt ? st.lastRedeemAt.slice(0, 19).replace('T', ' ') : 'â€”',
 				inline: true
 			}, ],
-			footer: 'Only you can see this · roster refreshes each auto cycle',
+			footer: 'Only you can see this Â· roster refreshes each auto cycle',
 		});
 		// User breakdown (ephemeral, owner only)
 		const lines = [];
@@ -85,9 +85,9 @@ module.exports = {
 			}
 			const players = (u.players || []).map((p) => `${p.name || 'Player'} \`${p.fid}\` K${p.kid ?? '?'}`).join(', ') || '_none_';
 			const alliances = (u.alliances || []).map((a) => `${a.name || a.slug} [${a.abbr || a.slug}] K${a.kid}`).join(', ') || '_none_';
-			lines.push(`${mention}\n👤 ${players}\n🛡️ ${alliances}`);
+			lines.push(`${mention}\nðŸ‘¤ ${players}\nðŸ›¡ï¸ ${alliances}`);
 		}
-		const userEmbed = new EmbedBuilder().setTitle('👥 Registered users').setColor(0x5865f2).setDescription(lines.length ? lines.join('\n\n').slice(0, 4000) : '_No users have registered yet._').setFooter({
+		const userEmbed = new EmbedBuilder().setTitle('ðŸ‘¥ Registered users').setColor(0x5865f2).setDescription(lines.length ? lines.join('\n\n').slice(0, 4000) : '_No users have registered yet._').setFooter({
 			text: users.length > 20 ? `Showing 20 of ${users.length} users` : `${users.length} user(s)`,
 		}).setTimestamp();
 		return interaction.editReply({

@@ -40,27 +40,27 @@ module.exports = {
 		}
 		const lines = active.map((c) => {
 			const bl = isBlacklisted(c.code);
-			if (bl) return `🔴 \`${c.code}\` — **Blacklisted**`;
+			if (bl) return `ðŸ”´ \`${c.code}\` â€” **Blacklisted**`;
 			const pending = getPendingMembers(c.code, targets);
 			const counts = countFidStatuses(c.code);
-			const exp = c.expiresAt ? ` · exp ${String(c.expiresAt).slice(0, 10)}` : '';
+			const exp = c.expiresAt ? ` Â· exp ${String(c.expiresAt).slice(0, 10)}` : '';
 			if (!targets.length) {
-				return `🟡 \`${c.code}\` — **Awaiting** (no registrations)${exp}`;
+				return `ðŸŸ¡ \`${c.code}\` â€” **Awaiting** (no registrations)${exp}`;
 			}
 			if (pending.length === 0 && counts.total > 0) {
-				return `🟢 \`${c.code}\` — **Done** for current roster (${counts.success + counts.already} ok)${exp}`;
+				return `ðŸŸ¢ \`${c.code}\` â€” **Done** for current roster (${counts.success + counts.already} ok)${exp}`;
 			}
 			if (pending.length > 0 && counts.total > 0) {
-				return `🟡 \`${c.code}\` — **${pending.length} pending** (new members / retries)${exp}`;
+				return `ðŸŸ¡ \`${c.code}\` â€” **${pending.length} pending** (new members / retries)${exp}`;
 			}
-			return `🟡 \`${c.code}\` — **Not yet** for current roster${exp}`;
+			return `ðŸŸ¡ \`${c.code}\` â€” **Not yet** for current roster${exp}`;
 		});
 		const seen = loadSeen();
 		const bl = loadBlacklist();
 		return interaction.editReply({
 			embeds: [
 				makeEmbed({
-					title: '🎁 Active gift codes',
+					title: 'ðŸŽ Active gift codes',
 					color: 'info',
 					description: lines.join('\n') || '_No active codes_',
 					fields: [{
@@ -81,7 +81,7 @@ module.exports = {
 						inline: true
 					}, {
 						name: 'Legend',
-						value: '🟢 Done · 🟡 Pending / not yet · 🔴 Blacklisted',
+						value: 'ðŸŸ¢ Done Â· ðŸŸ¡ Pending / not yet Â· ðŸ”´ Blacklisted',
 					}, ],
 					footer: 'New alliance members stay pending until redeemed',
 				}),

@@ -66,7 +66,7 @@ module.exports = {
 			if (!list.length) {
 				return interaction.reply({
 					embeds: [makeEmbed({
-						title: '🔔 Reminders',
+						title: 'ðŸ”” Reminders',
 						description: '_None yet. Use `/eventreminder setup`_',
 						color: 'info'
 					})],
@@ -75,13 +75,13 @@ module.exports = {
 			}
 			const lines = list.map((r) => {
 				const next = getNextOccurrence(r);
-				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : '—';
-				const note = r.note ? ' · 📝 note' : '';
-				return `${r.enabled ? '✅' : '❌'} ${r.emoji || '🔔'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} · Next ${nextStr}${note}`;
+				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : 'â€”';
+				const note = r.note ? ' Â· ðŸ“ note' : '';
+				return `${r.enabled ? 'âœ…' : 'âŒ'} ${r.emoji || 'ðŸ””'} **${r.name}** \`${r.id}\`\n${formatSchedule(r)} Â· Next ${nextStr}${note}`;
 			});
 			return interaction.reply({
 				embeds: [makeEmbed({
-					title: `🔔 Reminders (${list.length})`,
+					title: `ðŸ”” Reminders (${list.length})`,
 					description: lines.join('\n\n').slice(0, 4000),
 					color: 'info'
 				})],
@@ -120,7 +120,7 @@ module.exports = {
 				value: (r.offsets || [60, 10]).join(','),
 				max: 30
 			}), input('emoji', 'Event emoji', {
-				value: r.emoji || '🔔',
+				value: r.emoji || 'ðŸ””',
 				max: 100
 			}), input('note', 'Reminder text / rules', {
 				style: TextInputStyle.Paragraph,
@@ -180,8 +180,8 @@ module.exports = {
 			})));
 			await interaction.reply({
 				embeds: [makeEmbed({
-					title: '🔔 Event Reminder Setup',
-					description: '**Step 1/4** — Choose the event',
+					title: 'ðŸ”” Event Reminder Setup',
+					description: '**Step 1/4** â€” Choose the event',
 					color: 'info'
 				})],
 				components: [new ActionRowBuilder().addComponents(eventMenu)],
@@ -297,8 +297,8 @@ async function handleEventReminderUI(interaction) {
 		});
 		await interaction.update({
 			embeds: [makeEmbed({
-				title: '🔔 Event Reminder Setup',
-				description: `Event: **${eventName}**${eventName === 'Custom' ? ' _(you\'ll name it in the next form)_' : ''}\n\n**Step 2/4** — Choose schedule type`,
+				title: 'ðŸ”” Event Reminder Setup',
+				description: `Event: **${eventName}**${eventName === 'Custom' ? ' _(you\'ll name it in the next form)_' : ''}\n\n**Step 2/4** â€” Choose schedule type`,
 				color: 'info'
 			})],
 			components: [new ActionRowBuilder().addComponents(typeMenu)],
@@ -337,7 +337,7 @@ async function handleEventReminderUI(interaction) {
 			placeholder: '2',
 			max: 3
 		}));
-		if (type === 'weekly') rows.push(input('weekdays', 'Weekdays 0=Sun…6=Sat (e.g. 1,3,5)', {
+		if (type === 'weekly') rows.push(input('weekdays', 'Weekdays 0=Sunâ€¦6=Sat (e.g. 1,3,5)', {
 			placeholder: '1,3,5',
 			max: 20
 		}));
@@ -353,7 +353,7 @@ async function handleEventReminderUI(interaction) {
 		rows.push(input('note', 'Reminder text / rules (optional)', {
 			style: TextInputStyle.Paragraph,
 			required: false,
-			placeholder: 'This text is the reminder message — rules, rally times…',
+			placeholder: 'This text is the reminder message â€” rules, rally timesâ€¦',
 			max: 700
 		}));
 		modal.addComponents(...rows);
@@ -374,7 +374,7 @@ async function handleEventReminderUI(interaction) {
 		const t = parseTime(get('time'));
 		if (!t) {
 			await interaction.reply({
-				content: '⚠️ Invalid time. Use `HH:MM` in UTC, e.g. `20:00`. Run `/eventreminder setup` again.',
+				content: 'âš ï¸ Invalid time. Use `HH:MM` in UTC, e.g. `20:00`. Run `/eventreminder setup` again.',
 				ephemeral: true
 			});
 			return true;
@@ -383,7 +383,7 @@ async function handleEventReminderUI(interaction) {
 			const name = get('name').trim();
 			if (!name) {
 				await interaction.reply({
-					content: '⚠️ Please enter an event name. Run `/eventreminder setup` again.',
+					content: 'âš ï¸ Please enter an event name. Run `/eventreminder setup` again.',
 					ephemeral: true
 				});
 				return true;
@@ -395,7 +395,7 @@ async function handleEventReminderUI(interaction) {
 		const details = parseDetails(wiz.type, get);
 		if (details.error) {
 			await interaction.reply({
-				content: `⚠️ ${details.error} Run \`/eventreminder setup\` again.`,
+				content: `âš ï¸ ${details.error} Run \`/eventreminder setup\` again.`,
 				ephemeral: true
 			});
 			return true;
@@ -410,7 +410,7 @@ async function handleEventReminderUI(interaction) {
 		}, details.data);
 		if (wiz.type === 'once' && !getNextOccurrence(wiz)) {
 			await interaction.reply({
-				content: '⚠️ That date/time is already in the past. Run `/eventreminder setup` again.',
+				content: 'âš ï¸ That date/time is already in the past. Run `/eventreminder setup` again.',
 				ephemeral: true
 			});
 			return true;
@@ -422,8 +422,8 @@ async function handleEventReminderUI(interaction) {
 		const channelMenu = new ChannelSelectMenuBuilder().setCustomId(`er_channel:${userId}`).setPlaceholder('Select channel for reminders').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement).setMaxValues(1);
 		await interaction.reply({
 			embeds: [makeEmbed({
-				title: '🔔 Event Reminder Setup',
-				description: `Event: **${wiz.name}**\nSchedule: ${formatSchedule(wiz)}\n\n**Step 3/4** — Choose the channel`,
+				title: 'ðŸ”” Event Reminder Setup',
+				description: `Event: **${wiz.name}**\nSchedule: ${formatSchedule(wiz)}\n\n**Step 3/4** â€” Choose the channel`,
 				color: 'info'
 			})],
 			components: [new ActionRowBuilder().addComponents(channelMenu)],
@@ -449,12 +449,12 @@ async function handleEventReminderUI(interaction) {
 		await interaction.update({
 			embeds: [
 				makeEmbed({
-					title: '🔔 Confirm reminder',
+					title: 'ðŸ”” Confirm reminder',
 					description: `**${wiz.name}**\nSchedule: ${formatSchedule(wiz)}\nChannel: <#${wiz.channelId}>\nRemind: ${wiz.offsets.map((o) => `${o}m`).join(', ')} before\nMention: @everyone\n\n**Preview** (shows only what you wrote):`,
 					color: 'warning'
 				}),
 				makeEmbed({
-					title: '📝 Preview',
+					title: 'ðŸ“ Preview',
 					description: reminderMessage(wiz, previewTime, {
 						test: true
 					}).replace('@everyone', '`@everyone`'),
@@ -505,7 +505,7 @@ async function handleEventReminderUI(interaction) {
 		});
 		wizards.delete(userId);
 		const next = getNextOccurrence(reminder);
-		const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : '—';
+		const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : 'â€”';
 		await interaction.update({
 			embeds: [resultEmbed('Reminder created', `**${reminder.name}**\n${formatSchedule(reminder)}\nNext: ${nextStr}\nID: \`${reminder.id}\``, true)],
 			components: []

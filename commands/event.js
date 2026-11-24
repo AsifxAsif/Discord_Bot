@@ -60,7 +60,7 @@ function input(id, label, {
 
 function panel(userId, d) {
 	const info = makeEmbed({
-		title: '📝 Announcement draft',
+		title: 'ðŸ“ Announcement draft',
 		description: 'Pick a channel, then **post now** or **schedule** it.',
 		color: 'info',
 		fields: [{
@@ -73,8 +73,8 @@ function panel(userId, d) {
 			inline: true
 		}, ],
 	});
-	const channelMenu = new ChannelSelectMenuBuilder().setCustomId(`event_channel:${userId}`).setPlaceholder(d.channelId ? 'Change channel…' : 'Post to which channel?').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
-	const buttons = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`event_mention:${userId}`).setLabel(d.mention === '@everyone' ? '@everyone: ON' : '@everyone: OFF').setStyle(d.mention === '@everyone' ? ButtonStyle.Danger : ButtonStyle.Secondary), new ButtonBuilder().setCustomId(`event_now:${userId}`).setLabel('Post now').setStyle(ButtonStyle.Success).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`event_sched:${userId}`).setLabel('Schedule…').setStyle(ButtonStyle.Primary).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`event_cancel:${userId}`).setLabel('Cancel').setStyle(ButtonStyle.Secondary));
+	const channelMenu = new ChannelSelectMenuBuilder().setCustomId(`event_channel:${userId}`).setPlaceholder(d.channelId ? 'Change channelâ€¦' : 'Post to which channel?').addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement);
+	const buttons = new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`event_mention:${userId}`).setLabel(d.mention === '@everyone' ? '@everyone: ON' : '@everyone: OFF').setStyle(d.mention === '@everyone' ? ButtonStyle.Danger : ButtonStyle.Secondary), new ButtonBuilder().setCustomId(`event_now:${userId}`).setLabel('Post now').setStyle(ButtonStyle.Success).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`event_sched:${userId}`).setLabel('Scheduleâ€¦').setStyle(ButtonStyle.Primary).setDisabled(!d.channelId), new ButtonBuilder().setCustomId(`event_cancel:${userId}`).setLabel('Cancel').setStyle(ButtonStyle.Secondary));
 	return {
 		embeds: [info, blogEmbed(d)],
 		components: [new ActionRowBuilder().addComponents(channelMenu), buttons]
@@ -98,18 +98,18 @@ module.exports = {
 		if (sub === 'post') {
 			const modal = new ModalBuilder().setCustomId(`event_modal:${userId}`).setTitle('Event Announcement');
 			modal.addComponents(input('event', 'Event name', {
-				placeholder: 'Bear Trap / Arena / KVK…',
+				placeholder: 'Bear Trap / Arena / KVKâ€¦',
 				max: 60
 			}), input('title', 'Title', {
 				placeholder: 'Weekend Bear Trap schedule',
 				max: 200
 			}), input('content', 'Content', {
 				style: TextInputStyle.Paragraph,
-				placeholder: 'Write the announcement…',
+				placeholder: 'Write the announcementâ€¦',
 				max: 2000
 			}), input('image', 'Image URL (optional)', {
 				required: false,
-				placeholder: 'https://…',
+				placeholder: 'https://â€¦',
 				max: 400
 			}));
 			return interaction.showModal(modal);
@@ -119,7 +119,7 @@ module.exports = {
 			const d = {
 				event: eventName,
 				title: `${eventName} is LIVE!`,
-				content: `**${eventName}** has started!\n\nGet ready, gather your troops, and fight for glory.\nGood luck, Governors! 🏆`,
+				content: `**${eventName}** has started!\n\nGet ready, gather your troops, and fight for glory.\nGood luck, Governors! ðŸ†`,
 				image: '',
 				color: 0xed4245,
 				mention: '@everyone',
@@ -136,8 +136,8 @@ module.exports = {
 			if (!list.length) {
 				return interaction.reply({
 					embeds: [makeEmbed({
-						title: '📋 Scheduled announcements',
-						description: '_None yet. Use `/event post` → Schedule._',
+						title: 'ðŸ“‹ Scheduled announcements',
+						description: '_None yet. Use `/event post` â†’ Schedule._',
 						color: 'info'
 					})],
 					ephemeral: true
@@ -145,12 +145,12 @@ module.exports = {
 			}
 			const lines = list.map((b) => {
 				const next = b.enabled ? getNextOccurrence(b) : null;
-				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : '—';
-				return `${b.enabled ? '✅' : '❌'} **${b.title}** \`${b.id}\`\n${b.event} · ${formatSchedule(b)} → <#${b.channelId}> · Next ${nextStr}`;
+				const nextStr = next ? `<t:${Math.floor(next.getTime() / 1000)}:R>` : 'â€”';
+				return `${b.enabled ? 'âœ…' : 'âŒ'} **${b.title}** \`${b.id}\`\n${b.event} Â· ${formatSchedule(b)} â†’ <#${b.channelId}> Â· Next ${nextStr}`;
 			});
 			return interaction.reply({
 				embeds: [makeEmbed({
-					title: `📋 Scheduled announcements (${list.length})`,
+					title: `ðŸ“‹ Scheduled announcements (${list.length})`,
 					description: lines.join('\n\n').slice(0, 4000),
 					color: 'info'
 				})],
@@ -296,11 +296,11 @@ async function handleEventUI(interaction) {
 		});
 		await interaction.update({
 			embeds: [makeEmbed({
-				title: '📅 Schedule announcement',
-				description: `**${d.title}** → <#${d.channelId}>\n\nChoose when it should be posted (UTC).`,
+				title: 'ðŸ“… Schedule announcement',
+				description: `**${d.title}** â†’ <#${d.channelId}>\n\nChoose when it should be posted (UTC).`,
 				color: 'info'
 			})],
-			components: [new ActionRowBuilder().addComponents(typeMenu), new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`event_back:${userId}`).setLabel('← Back').setStyle(ButtonStyle.Secondary))],
+			components: [new ActionRowBuilder().addComponents(typeMenu), new ActionRowBuilder().addComponents(new ButtonBuilder().setCustomId(`event_back:${userId}`).setLabel('â† Back').setStyle(ButtonStyle.Secondary))],
 		});
 		return true;
 	}
@@ -319,7 +319,7 @@ async function handleEventUI(interaction) {
 			placeholder: '2',
 			max: 3
 		}));
-		if (d.stype === 'weekly') rows.push(input('weekdays', 'Weekdays 0=Sun…6=Sat (e.g. 1,3,5)', {
+		if (d.stype === 'weekly') rows.push(input('weekdays', 'Weekdays 0=Sunâ€¦6=Sat (e.g. 1,3,5)', {
 			placeholder: '1,3,5',
 			max: 20
 		}));
@@ -348,14 +348,14 @@ async function handleEventUI(interaction) {
 		} : null;
 		if (!err && d.stype === 'once' && !getNextOccurrence(schedule)) {
 			await interaction.reply({
-				content: '⚠️ That date/time is already in the past.',
+				content: 'âš ï¸ That date/time is already in the past.',
 				ephemeral: true
 			});
 			return true;
 		}
 		if (err) {
 			await interaction.reply({
-				content: `⚠️ ${err}`,
+				content: `âš ï¸ ${err}`,
 				ephemeral: true
 			});
 			return true;
@@ -375,7 +375,7 @@ async function handleEventUI(interaction) {
 		drafts.delete(userId);
 		const next = getNextOccurrence(blog);
 		await interaction.update({
-			embeds: [resultEmbed('Announcement scheduled', `**${blog.title}**\n${formatSchedule(blog)} → <#${blog.channelId}>\nNext: ${next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : '—'}\nID: \`${blog.id}\``, true)],
+			embeds: [resultEmbed('Announcement scheduled', `**${blog.title}**\n${formatSchedule(blog)} â†’ <#${blog.channelId}>\nNext: ${next ? `<t:${Math.floor(next.getTime() / 1000)}:F>` : 'â€”'}\nID: \`${blog.id}\``, true)],
 			components: [],
 		});
 		return true;

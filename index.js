@@ -97,7 +97,7 @@ async function runSchedulerTick() {
 				for (const old of takeSuperseded(r.id, eventTime.getTime(), offset)) {
 					await deleteMessage(client, old.channelId, old.messageId);
 				}
-				console.log(`[reminder] Fired ${r.name} (${offset}m) â†’ #${ch.name}`);
+				console.log(`[reminder] Fired ${r.name} (${offset}m) Ã¢â€ â€™ #${ch.name}`);
 			} catch (e) {
 				console.error(`[reminder] Failed ${r.id}:`, e.message);
 			}
@@ -121,7 +121,7 @@ async function runSchedulerTick() {
 					embeds: [blogEmbed(b)]
 				});
 				markFired(b.id, eventMs);
-				console.log(`[blog] Posted "${b.title}" â†’ #${ch.name}`);
+				console.log(`[blog] Posted "${b.title}" Ã¢â€ â€™ #${ch.name}`);
 			} catch (e) {
 				console.error(`[blog] Failed ${b.id}:`, e.message);
 			}
@@ -133,7 +133,7 @@ async function runSchedulerTick() {
 	}
 }
 client.once(Events.ClientReady, (c) => {
-	console.log(`âœ… Logged in as ${c.user.tag}`);
+	console.log(`Ã¢Å“â€¦ Logged in as ${c.user.tag}`);
 	const autoOff = String(process.env.AUTOREDEEM || 'true').toLowerCase() === 'false';
 	if (!autoOff) {
 		console.log('AUTOREDEEM ON');
@@ -187,8 +187,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
 					ephemeral: true
 				});
 			}
-			const embed = new EmbedBuilder().setTitle(`${title} — ${code}`).setColor(kind === 'success' ? 0x57f287 : kind === 'already' ? 0x5865f2 : 0xed4245).setDescription(formatPlayerList(list, title)).setFooter({
-				text: `${list.length} player(s) · only you can see this`
+			const embed = new EmbedBuilder().setTitle(`${title} â€” ${code}`).setColor(kind === 'success' ? 0x57f287 : kind === 'already' ? 0x5865f2 : 0xed4245).setDescription(formatPlayerList(list, title)).setFooter({
+				text: `${list.length} player(s) Â· only you can see this`
 			}).setTimestamp();
 			return interaction.reply({
 				embeds: [embed],
@@ -218,7 +218,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				}
 				const ok = reg.removePlayer(owner, fid);
 				return interaction.reply({
-					content: ok ? '✅ Removed player `' + fid + '`' : 'Not found.',
+					content: ok ? 'âœ… Removed player `' + fid + '`' : 'Not found.',
 					ephemeral: true
 				});
 			}
@@ -234,7 +234,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 				}
 				const ok = reg.removeAlliance(owner, kid, slug);
 				return interaction.reply({
-					content: ok ? `✅ Removed alliance **${slug}** (K${kid})` : 'Not found.',
+					content: ok ? `âœ… Removed alliance **${slug}** (K${kid})` : 'Not found.',
 					ephemeral: true
 				});
 			}
@@ -247,7 +247,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 		}
 		return;
 	}
-	// ===== Games (buttons, select menus, modals: customId "g:…") =====
+	// ===== Games (buttons, select menus, modals: customId "g:â€¦") =====
 	if ((interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) && interaction.customId.startsWith('g:')) {
 		if (await handleGamesUI(interaction)) return;
 	}

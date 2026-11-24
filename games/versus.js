@@ -18,7 +18,7 @@ const {
 const TURN_MS = 90 * 1000;
 const INVITE_MS = 60 * 1000;
 /* ---------- shared lifecycle ---------- */
-const rematchBtn = (s) => btn(`g:${s.type}:${s.id}:rematch`, `🔁 Rematch (${s.rematch.size}/2)`, ButtonStyle.Primary);
+const rematchBtn = (s) => btn(`g:${s.type}:${s.id}:rematch`, `ðŸ” Rematch (${s.rematch.size}/2)`, ButtonStyle.Primary);
 
 function inviteView(s, g) {
 	const [a, b] = s.players;
@@ -26,16 +26,16 @@ function inviteView(s, g) {
 		content: mention(b),
 		embeds: [
 			embed({
-				title: `${g.icon} ${g.label} — challenge!`,
-				description: `${mention(a)} challenges ${mention(b)}!\n\n${g.rules}\n\n⏳ Invite expires <t:${ts(Date.now() + INVITE_MS)}:R>`,
+				title: `${g.icon} ${g.label} â€” challenge!`,
+				description: `${mention(a)} challenges ${mention(b)}!\n\n${g.rules}\n\nâ³ Invite expires <t:${ts(Date.now() + INVITE_MS)}:R>`,
 				color: 'warn',
 			}),
 		],
 		components: [
 			row(btn(`g:${s.type}:${s.id}:accept`, 'Accept', ButtonStyle.Success, {
-				emoji: '✅'
+				emoji: 'âœ…'
 			}), btn(`g:${s.type}:${s.id}:decline`, 'Decline', ButtonStyle.Danger, {
-				emoji: '✖️'
+				emoji: 'âœ–ï¸'
 			}), btn(`g:${s.type}:${s.id}:cancel`, 'Cancel', ButtonStyle.Secondary)),
 		],
 	};
@@ -46,8 +46,8 @@ async function challenge(interaction, key) {
 	if (opp.bot || opp.id === interaction.user.id) {
 		return interaction.reply({
 			embeds: [embed({
-				title: '❌ Invalid opponent',
-				description: 'Pick a real member — not yourself or a bot.',
+				title: 'âŒ Invalid opponent',
+				description: 'Pick a real member â€” not yourself or a bot.',
 				color: 'danger'
 			})],
 			flags: EPH,
@@ -69,7 +69,7 @@ async function challenge(interaction, key) {
 			content: null,
 			embeds: [embed({
 				title: `${g.icon} ${g.label}`,
-				description: '⌛ Challenge expired — nobody answered.',
+				description: 'âŒ› Challenge expired â€” nobody answered.',
 				color: 'neutral'
 			})],
 			components: []
@@ -105,8 +105,8 @@ function armTurn(s, onTimeout) {
 	});
 }
 const resultLine = (s) => {
-	if (s.winner) return `🏆 ${mention(s.winner)} wins!${s.reason === 'timeout' ? ' _(opponent timed out)_' : s.reason === 'forfeit' ? ' _(opponent forfeited)_' : ''}`;
-	return '🤝 **It\'s a draw!**';
+	if (s.winner) return `ðŸ† ${mention(s.winner)} wins!${s.reason === 'timeout' ? ' _(opponent timed out)_' : s.reason === 'forfeit' ? ' _(opponent forfeited)_' : ''}`;
+	return 'ðŸ¤ **It\'s a draw!**';
 };
 const other = (s, uid) => (uid === s.players[0] ? s.players[1] : s.players[0]);
 /* =====================================================================
@@ -152,7 +152,7 @@ function tttBegin(s, interaction) {
 function tttView(s) {
 	const [a, b] = s.players;
 	const over = s.phase === 'over';
-	const status = over ? resultLine(s) : `🎯 ${mention(s.players[s.turn])}'s turn (${s.turn === 0 ? '❌' : '⭕'})\n⏳ Move <t:${ts(Date.now() + TURN_MS)}:R>`;
+	const status = over ? resultLine(s) : `ðŸŽ¯ ${mention(s.players[s.turn])}'s turn (${s.turn === 0 ? 'âŒ' : 'â­•'})\nâ³ Move <t:${ts(Date.now() + TURN_MS)}:R>`;
 	const rows = [];
 	for (let r = 0; r < 3; r++) {
 		const comps = [];
@@ -161,18 +161,18 @@ function tttView(s) {
 			const cell = s.board[i];
 			const win = s.winLine && s.winLine.includes(i);
 			comps.push(btn(`g:ttt:${s.id}:move:${i}`, null, win ? ButtonStyle.Success : cell === 'X' ? ButtonStyle.Danger : cell === 'O' ? ButtonStyle.Primary : ButtonStyle.Secondary, {
-				emoji: cell === 'X' ? '❌' : cell === 'O' ? '⭕' : '⬜',
+				emoji: cell === 'X' ? 'âŒ' : cell === 'O' ? 'â­•' : 'â¬œ',
 				disabled: over || !!cell,
 			}));
 		}
 		rows.push(row(...comps));
 	}
-	rows.push(row(over ? rematchBtn(s) : btn(`g:ttt:${s.id}:forfeit`, '🏳️ Forfeit', ButtonStyle.Secondary)));
+	rows.push(row(over ? rematchBtn(s) : btn(`g:ttt:${s.id}:forfeit`, 'ðŸ³ï¸ Forfeit', ButtonStyle.Secondary)));
 	return {
 		content: null,
 		embeds: [embed({
-			title: '⭕ Tic-Tac-Toe',
-			description: `❌ ${mention(a)}  vs  ⭕ ${mention(b)}\n\n${status}`,
+			title: 'â­• Tic-Tac-Toe',
+			description: `âŒ ${mention(a)}  vs  â­• ${mention(b)}\n\n${status}`,
 			color: over ? (s.winner ? 'success' : 'neutral') : s.turn === 0 ? 'danger' : 'info'
 		})],
 		components: rows,
@@ -190,7 +190,7 @@ async function tttAction(s, interaction, action, arg) {
 	}
 	if (action !== 'move') return;
 	if (uid !== s.players[s.turn]) return interaction.reply({
-		content: '⏳ Not your turn.',
+		content: 'â³ Not your turn.',
 		flags: EPH
 	});
 	const i = Number(arg);
@@ -278,25 +278,25 @@ function c4Begin(s, interaction) {
 
 function c4Render(s) {
 	const win = new Set((s.winCells || []).map(([r, c]) => `${r},${c}`));
-	const sym = (cell, r, c) => (cell === 'R' ? (win.has(`${r},${c}`) ? '🟥' : '🔴') : cell === 'Y' ? (win.has(`${r},${c}`) ? '🟨' : '🟡') : '⚫');
-	return s.board.map((line, r) => line.map((cell, c) => sym(cell, r, c)).join('')).join('\n') + '\n1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣';
+	const sym = (cell, r, c) => (cell === 'R' ? (win.has(`${r},${c}`) ? 'ðŸŸ¥' : 'ðŸ”´') : cell === 'Y' ? (win.has(`${r},${c}`) ? 'ðŸŸ¨' : 'ðŸŸ¡') : 'âš«');
+	return s.board.map((line, r) => line.map((cell, c) => sym(cell, r, c)).join('')).join('\n') + '\n1ï¸âƒ£2ï¸âƒ£3ï¸âƒ£4ï¸âƒ£5ï¸âƒ£6ï¸âƒ£7ï¸âƒ£';
 }
 
 function c4View(s) {
 	const [a, b] = s.players;
 	const over = s.phase === 'over';
-	const status = over ? resultLine(s) : `🎯 ${mention(s.players[s.turn])}'s turn (${s.turn === 0 ? '🔴' : '🟡'})\n⏳ Move <t:${ts(Date.now() + TURN_MS)}:R>`;
+	const status = over ? resultLine(s) : `ðŸŽ¯ ${mention(s.players[s.turn])}'s turn (${s.turn === 0 ? 'ðŸ”´' : 'ðŸŸ¡'})\nâ³ Move <t:${ts(Date.now() + TURN_MS)}:R>`;
 	const style = s.turn === 0 ? ButtonStyle.Danger : ButtonStyle.Primary;
 	const col = (c) => btn(`g:c4:${s.id}:drop:${c}`, String(c + 1), style, {
 		disabled: over || !!s.board[0][c]
 	});
 	const r1 = row(col(0), col(1), col(2), col(3), col(4));
-	const r2 = row(col(5), col(6), over ? rematchBtn(s) : btn(`g:c4:${s.id}:forfeit`, '🏳️ Forfeit', ButtonStyle.Secondary));
+	const r2 = row(col(5), col(6), over ? rematchBtn(s) : btn(`g:c4:${s.id}:forfeit`, 'ðŸ³ï¸ Forfeit', ButtonStyle.Secondary));
 	return {
 		content: null,
 		embeds: [embed({
-			title: '🔴 Connect Four',
-			description: `🔴 ${mention(a)}  vs  🟡 ${mention(b)}\n\n${c4Render(s)}\n\n${status}`,
+			title: 'ðŸ”´ Connect Four',
+			description: `ðŸ”´ ${mention(a)}  vs  ðŸŸ¡ ${mention(b)}\n\n${c4Render(s)}\n\n${status}`,
 			color: over ? (s.winner ? 'success' : 'neutral') : s.turn === 0 ? 'danger' : 'warn'
 		})],
 		components: [r1, r2],
@@ -314,7 +314,7 @@ async function c4Action(s, interaction, action, arg) {
 	}
 	if (action !== 'drop') return;
 	if (uid !== s.players[s.turn]) return interaction.reply({
-		content: '⏳ Not your turn.',
+		content: 'â³ Not your turn.',
 		flags: EPH
 	});
 	const col = Number(arg);
@@ -341,19 +341,19 @@ async function c4Action(s, interaction, action, arg) {
 	return interaction.update(c4View(s));
 }
 /* =====================================================================
- * ROCK PAPER SCISSORS — first to 2 round wins, picks stay hidden
+ * ROCK PAPER SCISSORS â€” first to 2 round wins, picks stay hidden
  * ===================================================================== */
 const RPS = {
 	rock: {
-		e: '🪨',
+		e: 'ðŸª¨',
 		beats: 'scissors'
 	},
 	paper: {
-		e: '📄',
+		e: 'ðŸ“„',
 		beats: 'rock'
 	},
 	scissors: {
-		e: '✂️',
+		e: 'âœ‚ï¸',
 		beats: 'paper'
 	}
 };
@@ -392,9 +392,9 @@ function rpsArm(s) {
 function rpsView(s) {
 	const [a, b] = s.players;
 	const over = s.phase === 'over';
-	const lock = (uid) => (s.picks[uid] ? '✅ locked in' : '⏳ choosing…');
+	const lock = (uid) => (s.picks[uid] ? 'âœ… locked in' : 'â³ choosingâ€¦');
 	const hist = s.history.slice(-4).join('\n');
-	const status = over ? `${resultLine(s)}\nFinal score: **${s.scores[0]} – ${s.scores[1]}**` : `**Round ${s.round}** — ${mention(a)} ${lock(a)} · ${mention(b)} ${lock(b)}\n⏳ Pick <t:${ts(Date.now() + TURN_MS)}:R>`;
+	const status = over ? `${resultLine(s)}\nFinal score: **${s.scores[0]} â€“ ${s.scores[1]}**` : `**Round ${s.round}** â€” ${mention(a)} ${lock(a)} Â· ${mention(b)} ${lock(b)}\nâ³ Pick <t:${ts(Date.now() + TURN_MS)}:R>`;
 	const comps = over ? [row(rematchBtn(s))] : [
 		row(btn(`g:rps:${s.id}:pick:rock`, 'Rock', ButtonStyle.Primary, {
 			emoji: RPS.rock.e
@@ -402,14 +402,14 @@ function rpsView(s) {
 			emoji: RPS.paper.e
 		}), btn(`g:rps:${s.id}:pick:scissors`, 'Scissors', ButtonStyle.Primary, {
 			emoji: RPS.scissors.e
-		}), btn(`g:rps:${s.id}:forfeit`, '🏳️', ButtonStyle.Secondary)),
+		}), btn(`g:rps:${s.id}:forfeit`, 'ðŸ³ï¸', ButtonStyle.Secondary)),
 	];
 	return {
 		content: null,
 		embeds: [
 			embed({
-				title: '🪨📄✂️ Rock Paper Scissors — first to 2',
-				description: `${mention(a)}  **${s.scores[0]}**  ━  **${s.scores[1]}**  ${mention(b)}\n\n${status}${hist ? `\n\n${hist}` : ''}`,
+				title: 'ðŸª¨ðŸ“„âœ‚ï¸ Rock Paper Scissors â€” first to 2',
+				description: `${mention(a)}  **${s.scores[0]}**  â”  **${s.scores[1]}**  ${mention(b)}\n\n${status}${hist ? `\n\n${hist}` : ''}`,
 				color: over ? (s.winner ? 'success' : 'neutral') : 'info',
 			}),
 		],
@@ -436,20 +436,20 @@ async function rpsAction(s, interaction, action, arg) {
 	if (!(s.picks[a] && s.picks[b])) {
 		await interaction.update(rpsView(s));
 		return interaction.followUp({
-			content: `You locked in ${RPS[arg].e} **${arg}**. Waiting for your opponent…`,
+			content: `You locked in ${RPS[arg].e} **${arg}**. Waiting for your opponentâ€¦`,
 			flags: EPH
 		}).catch(() => {});
 	}
 	const pa = s.picks[a];
 	const pb = s.picks[b];
 	let line;
-	if (pa === pb) line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} — draw`;
+	if (pa === pb) line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} â€” draw`;
 	else if (RPS[pa].beats === pb) {
 		s.scores[0]++;
-		line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} — ${mention(a)} wins`;
+		line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} â€” ${mention(a)} wins`;
 	} else {
 		s.scores[1]++;
-		line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} — ${mention(b)} wins`;
+		line = `**R${s.round}** ${RPS[pa].e} vs ${RPS[pb].e} â€” ${mention(b)} wins`;
 	}
 	s.history.push(line);
 	s.picks = {};
@@ -465,7 +465,7 @@ async function rpsAction(s, interaction, action, arg) {
 	return interaction.update(rpsView(s));
 }
 /* =====================================================================
- * REACTION DUEL — first to 2, false-start penalty, millisecond timing
+ * REACTION DUEL â€” first to 2, false-start penalty, millisecond timing
  * ===================================================================== */
 const REACT_TARGET = 2;
 const REACT_MAX_ROUNDS = 6;
@@ -499,7 +499,7 @@ function reactArm(s) {
 		s.stage = 'go';
 		core.setTimer(s, 'nogo', 8000, async () => {
 			if (s.rid !== rid || s.stage !== 'go') return;
-			s.roundText = '😴 Nobody clicked — round skipped.';
+			s.roundText = 'ðŸ˜´ Nobody clicked â€” round skipped.';
 			await reactEndRound(s, null, null);
 		});
 	});
@@ -539,20 +539,20 @@ function reactView(s) {
 	let color = 'info';
 	let button;
 	if (over) {
-		head = `${resultLine(s)}\nFinal score: **${s.scores[0]} – ${s.scores[1]}**`;
+		head = `${resultLine(s)}\nFinal score: **${s.scores[0]} â€“ ${s.scores[1]}**`;
 		color = s.winner ? 'success' : 'neutral';
 		button = rematchBtn(s);
 	} else if (s.stage === 'wait' || s.stage === 'arming') {
-		head = '🔴 **Get ready… wait for GREEN!**\nClicking early = you lose the round.';
+		head = 'ðŸ”´ **Get readyâ€¦ wait for GREEN!**\nClicking early = you lose the round.';
 		color = 'danger';
-		button = btn(`g:react:${s.id}:click`, '⏳ Wait for it…', ButtonStyle.Danger);
+		button = btn(`g:react:${s.id}:click`, 'â³ Wait for itâ€¦', ButtonStyle.Danger);
 	} else if (s.stage === 'go') {
-		head = '🟢 **CLICK NOW!**';
+		head = 'ðŸŸ¢ **CLICK NOW!**';
 		color = 'success';
-		button = btn(`g:react:${s.id}:click`, '⚡ CLICK!', ButtonStyle.Success);
+		button = btn(`g:react:${s.id}:click`, 'âš¡ CLICK!', ButtonStyle.Success);
 	} else {
 		head = s.roundText;
-		button = btn(`g:react:${s.id}:click`, 'Next round incoming…', ButtonStyle.Secondary, {
+		button = btn(`g:react:${s.id}:click`, 'Next round incomingâ€¦', ButtonStyle.Secondary, {
 			disabled: true
 		});
 	}
@@ -560,8 +560,8 @@ function reactView(s) {
 		content: null,
 		embeds: [
 			embed({
-				title: '⚡ Reaction Duel — first to 2',
-				description: `${mention(a)}  **${s.scores[0]}**  ━  **${s.scores[1]}**  ${mention(b)}\nRound **${s.round}**\n\n${head}${over && s.roundText ? `\n\n${s.roundText}` : ''}`,
+				title: 'âš¡ Reaction Duel â€” first to 2',
+				description: `${mention(a)}  **${s.scores[0]}**  â”  **${s.scores[1]}**  ${mention(b)}\nRound **${s.round}**\n\n${head}${over && s.roundText ? `\n\n${s.roundText}` : ''}`,
 				color,
 			}),
 		],
@@ -572,12 +572,12 @@ async function reactAction(s, interaction, action) {
 	const uid = interaction.user.id;
 	if (s.phase !== 'play' || action !== 'click') return interaction.deferUpdate();
 	if (s.stage === 'wait' || s.stage === 'arming') {
-		s.roundText = `🚫 ${mention(uid)} clicked too early!`;
+		s.roundText = `ðŸš« ${mention(uid)} clicked too early!`;
 		return reactEndRound(s, other(s, uid), interaction);
 	}
 	if (s.stage === 'go') {
 		const ms = Math.max(0, interaction.createdTimestamp - (s.goAt || interaction.createdTimestamp));
-		s.roundText = `⚡ ${mention(uid)} reacted in **${ms} ms**!`;
+		s.roundText = `âš¡ ${mention(uid)} reacted in **${ms} ms**!`;
 		return reactEndRound(s, uid, interaction);
 	}
 	return interaction.reply({
@@ -591,7 +591,7 @@ async function reactAction(s, interaction, action) {
 const GAMES = {
 	ttt: {
 		label: 'Tic-Tac-Toe',
-		icon: '⭕',
+		icon: 'â­•',
 		rules: 'Get **three in a row**. 90s per move.',
 		begin: tttBegin,
 		view: tttView,
@@ -599,7 +599,7 @@ const GAMES = {
 	},
 	c4: {
 		label: 'Connect Four',
-		icon: '🔴',
+		icon: 'ðŸ”´',
 		rules: 'Connect **four** discs in any direction. 90s per move.',
 		begin: c4Begin,
 		view: c4View,
@@ -607,7 +607,7 @@ const GAMES = {
 	},
 	rps: {
 		label: 'Rock Paper Scissors',
-		icon: '✊',
+		icon: 'âœŠ',
 		rules: 'First to **2 round wins**. Picks stay hidden until both lock in.',
 		begin: rpsBegin,
 		view: rpsView,
@@ -615,8 +615,8 @@ const GAMES = {
 	},
 	react: {
 		label: 'Reaction Duel',
-		icon: '⚡',
-		rules: 'First to **2 round wins**. Click when the button turns **green** — early clicks lose the round!',
+		icon: 'âš¡',
+		rules: 'First to **2 round wins**. Click when the button turns **green** â€” early clicks lose the round!',
 		begin: reactBegin,
 		view: reactView,
 		onAction: reactAction
@@ -639,7 +639,7 @@ async function handle(interaction, parts) {
 	if (s.phase === 'invite') {
 		if (action === 'accept') {
 			if (uid !== p2) return interaction.reply({
-				content: '🚫 This challenge is not for you.',
+				content: 'ðŸš« This challenge is not for you.',
 				flags: EPH
 			});
 			core.clearTimers(s);
@@ -647,7 +647,7 @@ async function handle(interaction, parts) {
 		}
 		if (action === 'decline') {
 			if (uid !== p2) return interaction.reply({
-				content: '🚫 This challenge is not for you.',
+				content: 'ðŸš« This challenge is not for you.',
 				flags: EPH
 			});
 			core.endSession(s.id);
@@ -655,7 +655,7 @@ async function handle(interaction, parts) {
 				content: null,
 				embeds: [embed({
 					title: `${g.icon} ${g.label}`,
-					description: `❌ ${mention(p2)} declined the challenge.`,
+					description: `âŒ ${mention(p2)} declined the challenge.`,
 					color: 'neutral'
 				})],
 				components: []
@@ -663,7 +663,7 @@ async function handle(interaction, parts) {
 		}
 		if (action === 'cancel') {
 			if (uid !== p1) return interaction.reply({
-				content: '🚫 Only the challenger can cancel.',
+				content: 'ðŸš« Only the challenger can cancel.',
 				flags: EPH
 			});
 			core.endSession(s.id);
@@ -671,7 +671,7 @@ async function handle(interaction, parts) {
 				content: null,
 				embeds: [embed({
 					title: `${g.icon} ${g.label}`,
-					description: '🚫 Challenge cancelled.',
+					description: 'ðŸš« Challenge cancelled.',
 					color: 'neutral'
 				})],
 				components: []
@@ -680,7 +680,7 @@ async function handle(interaction, parts) {
 		return interaction.deferUpdate();
 	}
 	if (!s.players.includes(uid)) return interaction.reply({
-		content: '🚫 You are not part of this game.',
+		content: 'ðŸš« You are not part of this game.',
 		flags: EPH
 	});
 	if (action === 'rematch') {
